@@ -1,8 +1,56 @@
-# React + Vite
+# Project Readme: Cardiotrack
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Pages
 
-Currently, two official plugins are available:
+### Landing Page
+- Contains information about the company.
+- Features a "Get Started" button for redirection.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Login Page
+- A 2-step process:
+  1. User enters phone number and receives OTP.
+  2. User enters OTP and gets verified.
+- Redirects user to the Tests Page upon verification.
+
+### Test Page
+- Divided into two sections:
+  - Cardiotrack packages: Pre-made packages displayed.
+  - Dropdown: Users can customize their own packages by selecting the number of tests.
+- Redirects users to the Details Page.
+
+### Details Page
+- Collects user details:
+  - Customer Name
+  - Customer Address
+  - Appointment Date
+  - Appointment Time
+- Provides options:
+  - Pay Now: Redirects to the payment portal.
+  - Pay Later: Redirects to the Appointment Confirmation Page.
+
+### Payment Page
+- Allows users to make payments for appointments.
+
+### History Page (v2.1)
+- Displays the history of appointments.
+
+### Status Page (v2.1)
+- Shows the status of appointments.
+
+### Reports Download
+- Enables users to download reports.
+
+## Version 2.1
+- Introduces History and Status pages for better user experience.
+
+## Usage
+1. Clone the repository.
+2. Install dependencies.
+3. Run the project.
+
+## Technologies Used
+- React
+- JavaScript
+- HTML
+- CSS
+
