@@ -1,5 +1,5 @@
 import './LandingPage.css';
-function LandingPage() {
+function LandingPage({setLandingState}) {
     return (
         <div className="w-full h-screen flex flex-col justify-center items-center relative">
             <div className="absolute top-1/2 transform -translate-y-1/2 flex flex-col items-center -space-y-4">
@@ -20,7 +20,10 @@ function LandingPage() {
                     <p className='text-black'>*by clicking on “Get Started” you have agreed to our T&C which are going to be applied</p>
                 </div>
                 <div className="starting_button w-full ">
-                    <button className='starting_button bg-darkGray w-11/12 lg:w-1/4'>
+                    <button className='starting_button bg-darkGray w-11/12 lg:w-1/4'
+                    onClick={(e) => {
+                        setLandingState(true)
+                    }}>
                         <p className='text-white'>Get Started</p>
                     </button>
                 </div>
