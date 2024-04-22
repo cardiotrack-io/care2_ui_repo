@@ -37,7 +37,7 @@ function LoginPage({ customerPhone, setCustomerPhone }) {
                     </div>
 
                     <div className="phone_input_container">
-                        <PhoneInput errorState={errorState} setErrorState={setErrorState} />
+                        <PhoneInput customerPhone={customerPhone} setCustomerPhone={setCustomerPhone} errorState={errorState} setErrorState={setErrorState} />
                     </div>
                 </div>
                 <div className="absolute flex items-center justify-center w-full pb-8 text-center bottom-2 -left-1">

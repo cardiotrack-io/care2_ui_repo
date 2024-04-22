@@ -7,7 +7,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Custom color names and values
         darkGreen: '#211715',
         darkGray: '#343434',
         white: '#FFFFFF',
