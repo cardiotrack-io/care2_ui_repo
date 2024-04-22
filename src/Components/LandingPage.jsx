@@ -1,30 +1,34 @@
 import './LandingPage.css';
-function LandingPage({setLandingState}) {
+function LandingPage({setLandingState , setLoginState}) {
+    function handleGetStarted() {
+        setLandingState(true);
+        setLoginState(true);
+    }
     return (
-        <div className="w-full h-screen flex flex-col justify-center items-center relative">
-            <div className="absolute top-1/2 transform -translate-y-1/2 flex flex-col items-center -space-y-4">
+        <div className="relative flex flex-col items-center justify-center w-full h-screen">
+            <div className="absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/2">
                 <div className="cardiotrack">
-                    <p className='font-bold text-black slide-in-blurred-top'>Cardiotrack</p>
+                    <p className='font-bold text-black puff-in-center'>Cardiotrack</p>
                 </div>
-                <div className="care-medical-test flex justify-center space-x-1">
-                    <div className='care slide-in-blurred-left'>
-                        <p className='text-black tracking-tighter'>Care</p>
+                <div className="flex justify-center space-x-1 care-medical-test">
+                    <div className='care puff-in-center'>
+                        <p className='tracking-tighter text-black'>Care</p>
                     </div>
-                    <div className="medical-test flex items-center justify-center slide-in-elliptic-top-fwd">
-                        <p className='text-navyBlue bg-paleBlue px-4 rounded-lg tracking-tighter'>Medical Home Visit</p>
+                    <div className="flex items-center justify-center medical-test flip-in-hor-bottom">
+                        <p className='px-4 tracking-tighter rounded-lg text-navyBlue bg-paleBlue '>Medical Home Visit</p>
                     </div>
                 </div>
             </div>
-            <div className="absolute bottom-0 left-0 w-full text-center pb-8">
+            <div className="absolute bottom-0 left-0 w-full pb-8 text-center">
                 <div className="warning">
                     <p className='text-black'>*by clicking on “Get Started” you have agreed to our T&C which are going to be applied</p>
                 </div>
-                <div className="starting_button w-full ">
-                    <button className='starting_button bg-darkGray w-11/12 lg:w-1/4'
+                <div className="w-full starting_button scale-in-ver-top">
+                    <button className='w-11/12 starting_button bg-darkGray lg:w-1/4'
                     onClick={(e) => {
-                        setLandingState(true)
+                        handleGetStarted()
                     }}>
-                        <p className='text-white'>Get Started</p>
+                        <p className='font-light text-white'>Get Started</p>
                     </button>
                 </div>
             </div>

@@ -27,6 +27,7 @@ export default {
         skyBlue: '#01A0CA',
         navyBlue: '#0283C1',
         paleBlue2: '#D7ECF4',
+        inputWhite: '#F5F5F5',
       },
     },
   },
