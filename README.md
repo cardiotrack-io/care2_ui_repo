@@ -1,12 +1,13 @@
 # Project Readme: Cardiotrack
 
-## How to install/run/build this Code.
+## How to install/run this Code.
 
 - git clone https://github.com/cardiotrack-io/care_rebuilt/tree/master
 - Navigate to the projects directory in CMD.
 - Once in the correct directory run
   - npm install
-  - npm run dev 
+  - npm run dev
+  - 
 
 
 ## Pages
