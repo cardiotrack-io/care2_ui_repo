@@ -2,10 +2,30 @@ import './Styles/LoginPage.css'
 import PhoneInput from './PhoneInput';
 import OTPInput from './OTPInput';
 import { useEffect, useState } from 'react';
-function LoginPage({ customerPhone, setCustomerPhone, otp, setOtp }) {
+function LoginPage({ customerPhone, setCustomerPhone, otp, setOtp, loginState, setLoginState , setMedicalTestState }) {
     const errorInit = {
         "error_status": false,
         "error_reason": ""
+    }
+    const [errorState, setErrorState] = useState(errorInit);
+    const [phoneStatus, setPhoneStatus] = useState(false);
+    const [OTPStatus, setOTPStatus] = useState(false)
+
+    //Function to verify the
+    const verifyOTP = (otp) => {
+        console.log(otp)
+        let joinedOtp = otp.join("");
+        console.log(joinedOtp)
+        if(joinedOtp == 123456) {
+            console.log("Verified !")
+            setLoginState(false)
+            setMedicalTestState(true)
+        } else {
+            setErrorState({
+                "error_status": true,
+                "error_reason": "Please enter valid OTP."
+            })
+        }
     }
     const checkIfValidPhone = (phone) => {
         // Check for spaces
@@ -15,18 +35,25 @@ function LoginPage({ customerPhone, setCustomerPhone, otp, setOtp }) {
                 error_reason: "Phone number should not contain spaces."
             };
         }
-        // Check for presence of any other characters
-        if (/[^0-9]/.test(phone)) {
-            return {
-                error_status: true,
-                error_reason: "Phone number should not contain any special characters or alphabets."
-            };
-        }
-        // Check for non-digit characters
+        // Check for presence of any non-digit characters
         if (/[^0-9]/.test(phone)) {
             return {
                 error_status: true,
                 error_reason: "Phone number should contain only digits (0-9)."
+            };
+        }
+        // Check if the phone number is exactly 10 digits long
+        if (phone.length !== 10) {
+            return {
+                error_status: true,
+                error_reason: "Phone number should be exactly 10 digits long."
+            };
+        }
+        // Check if the phone number starts with a digit between 6 and 9
+        if (!/^[6-9]/.test(phone)) {
+            return {
+                error_status: true,
+                error_reason: "Phone number should start with a digit between 6 and 9."
             };
         }
         // If no errors, return no error status
@@ -35,10 +62,9 @@ function LoginPage({ customerPhone, setCustomerPhone, otp, setOtp }) {
             error_reason: ""
         };
     };
+    
 
-    const [errorState, setErrorState] = useState(errorInit);
-    const [phoneStatus, setPhoneStatus] = useState(false);
-    const [OTPStatus, setOTPStatus] = useState()
+    
     useEffect(() => {
         setTimeout(() => {
             setErrorState({
@@ -125,14 +151,11 @@ function LoginPage({ customerPhone, setCustomerPhone, otp, setOtp }) {
                         {phoneStatus == true && (
                             <button className='w-4/5 starting_button bg-darkGray lg:w-1/4'
                                 onClick={(e) => {
-                                    if (phoneStatus == false) {
-                                        let validity = checkIfValidPhone(customerPhone)
-                                        console.log(validity)
-                                        setErrorState(validity)
-                                        if (!validity.error_status) {
-                                            setPhoneStatus(true)
+                                    if (OTPStatus == false) {
+                                        let validity = verifyOTP(otp)
+                                        if (validity == true) {
+                                            setOTPStatus(true)
                                         }
-                                    } else if (phoneStatus == true) {
                                     }
                                 }}>
                                 <p className='font-light text-white'>Verify OTP</p>

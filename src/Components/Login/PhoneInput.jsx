@@ -10,7 +10,7 @@ function PhoneInput({ errorState, setErrorState, customerPhone, setCustomerPhone
             return;
         }
         // Regular expression to check if input contains only digits
-        const isNumeric = /^\d$+/.test(phone_input);
+        const isNumeric = /^\d+$/.test(phone_input);
     
         if (isNumeric) {
             setCustomerPhone(phone_input);

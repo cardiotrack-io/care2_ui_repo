@@ -7,7 +7,6 @@
 - Once in the correct directory run
   - npm install
   - npm run dev
-  - 
 
 
 ## Pages
