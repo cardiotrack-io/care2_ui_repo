@@ -1,18 +1,30 @@
 import "./Styles/PhoneInput.css"
-function PhoneInput({errorState , setErrorState, customerPhone , setCustomerPhone}) {
-    function handlePhoneInput(phone_input) {
-        if(phone_input == "")   {
+function PhoneInput({ errorState, setErrorState, customerPhone, setCustomerPhone }) {
+    const handlePhoneInput = (phone_input) => {
+        if (phone_input === "") {
             setCustomerPhone("");
+            setErrorState({
+                error_status: false,
+                error_reason: ""
+            });
+            return;
         }
-        if (phone_input.toString().split("").pop().toUpperCase() == phone_input.toString().split("").pop().toLowerCase()) {
+        // Regular expression to check if input contains only digits
+        const isNumeric = /^\d$+/.test(phone_input);
+    
+        if (isNumeric) {
             setCustomerPhone(phone_input);
+            setErrorState({
+                error_status: false,
+                error_reason: ""
+            });
         } else {
             setErrorState({
-                "error_status": true,
-                "error_reason": "Please Enter Numeric Value !"
-            })
+                error_status: true,
+                error_reason: "Please enter a numeric value!"
+            });
         }
-    }
+    };
     return (
         <>
             <div className="flex flex-row items-start justify-center mt-4 input_container">

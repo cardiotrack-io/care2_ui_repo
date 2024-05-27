@@ -20,7 +20,7 @@ function LandingPage({setLandingState , setLoginState}) {
                 </div>
             </div>
             <div className="absolute bottom-0 left-0 w-full pb-8 text-center">
-                <div className="warning">
+                <div className="warning mb-1">
                     <p className='text-black'>*by clicking on “Get Started” you have agreed to our T&C which are going to be applied</p>
                 </div>
                 <div className="w-full starting_button scale-in-ver-top">
