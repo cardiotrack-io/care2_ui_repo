@@ -3,6 +3,7 @@ import './App.css'
 import LandingPage from './Components/Landing/LandingPage'
 import LoginPage from './Components/Login/LoginPage';
 import MedicalTests from './Components/MedicalTests/MedicalTests';
+import Loading from './Components/Utility/Loading';
 //Globally declaring size of OTP
 const OTPSize = 6;
 function App() {
@@ -14,8 +15,14 @@ function App() {
   const [selectedMedicalTests, setSelectedMedicalTests] = useState(null)
   const [employeeStatus, setEmployeeStatus] = useState(false);
   const [otp, setOtp] = useState(new Array(OTPSize).fill(""));
+  const [loading , setLoading] = useState(false)
   return (
     < div className=''>
+      {(loading == true) && (
+        <div className="loading_container absolute bg-slate-900 ">
+          <Loading />
+        </div>
+      )}
       {(landingState == false) && (
         <LandingPage
           setLandingState={setLandingState}
@@ -31,6 +38,7 @@ function App() {
           loginState={loginState}
           setLoginState={setLoginState}
           setMedicalTestState = {setMedicalTestState}
+          setLoading ={setLoading}
         />
       )}
       {(medicalTestState == true) && (
@@ -39,6 +47,7 @@ function App() {
           setAllMedicalTests={setAllMedicalTests}
           selectedMedicalTests={selectedMedicalTests}
           setSelectedMedicalTests={setSelectedMedicalTests}
+          setLoading ={setLoading}
         />
       )}
     </div>

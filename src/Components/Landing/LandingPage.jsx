@@ -1,4 +1,5 @@
 import "./LandingPage.css";
+
 function LandingPage({ setLandingState, setLoginState }) {
   function handleGetStarted() {
     setLandingState(true);
@@ -6,15 +7,15 @@ function LandingPage({ setLandingState, setLoginState }) {
   }
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-screen">
-      <div className="absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/2">
+      <div className="flip-in-hor-top absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/2">
         <div className="cardiotrack">
-          <p className="font-bold text-black puff-in-center">Cardiotrack</p>
+          <p className="font-bold text-black ">Cardiotrack</p>
         </div>
         <div className="flex justify-center space-x-1 care-medical-test">
-          <div className="care puff-in-center">
+          <div className="care ">
             <p className="tracking-tighter text-black">Care</p>
           </div>
-          <div className="flex items-center justify-center medical-test flip-in-hor-bottom">
+          <div className="flex items-center justify-center medical-test ">
             <p className="px-4 tracking-tighter rounded-lg text-navyBlue bg-paleBlue ">
               Medical Home Visit
             </p>

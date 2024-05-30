@@ -14,6 +14,7 @@ function LoginPage({
   loginState,
   setLoginState,
   setMedicalTestState,
+  setLoading
 }) {
   const errorInit = {
     error_status: false,
@@ -46,6 +47,7 @@ function LoginPage({
       .then((response) => {
         console.log(response);
         setPhoneStatus(true);
+        setLoading(false)
       })
       .catch((error) => {
         console.log("Please check your internet connection");
@@ -82,7 +84,7 @@ function LoginPage({
           console.log(data);
           setLoginState(false);
           setMedicalTestState(true);
-          // window.location.href = "/care/TestSelect";
+          setLoading(false)
         }
       })
       .catch((error) => {
@@ -137,17 +139,17 @@ function LoginPage({
   return (
     <div className="relative flex flex-col w-full h-screen px-6 ">
       <div className="container mt-11">
-        <div className="flex flex-col -space-y-4">
-          <div className="cardiotrack">
-            <p className="font-bold text-black slide-in-blurred-top">
+        <div className="flex flex-col -space-y-4 slide-in-left">
+          <div className="cardiotrack slide-in-left">
+            <p className="font-bold text-black ">
               Cardiotrack
             </p>
           </div>
           <div className="flex justify-center space-x-1 care-medical-test">
-            <div className="care slide-in-blurred-left">
+            <div className="care ">
               <p className="tracking-tighter text-black">Care</p>
             </div>
-            <div className="flex items-center justify-center medical-test slide-in-elliptic-top-fwd">
+            <div className="flex items-center justify-center medical-test ">
               <p className="px-4 tracking-tighter rounded-lg text-navyBlue bg-paleBlue">
                 Medical Home Visit
               </p>
@@ -211,10 +213,12 @@ function LoginPage({
                   console.log(validity);
                   setErrorState(validity);
                   if (!validity.error_status) {
+                    setLoading(true)
                     sendOTP(customerPhone);
                   }
                 } else if (phoneStatus == true && OTPStatus == false) {
                   let joinedOTP = otp.join("");
+                  setLoading(true)
                   getOtpValidationStatus(joinedOTP, customerPhone);
                 }
               }}
