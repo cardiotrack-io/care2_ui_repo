@@ -84,11 +84,11 @@ function LoginPage({
           console.log(data);
           setLoginState(false);
           setMedicalTestState(true);
-          setLoading(false)
         }
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false)
         console.log("Please check your internet connection");
       });
   };

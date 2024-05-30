@@ -8,17 +8,21 @@ import axios from "axios";
 import TestAndDcApiEndPoints from "../../Constants/MedicalTestEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 import { useEffect, useState } from "react";
+const MedicalPackageNames = ["Full Body", "Go Women!", "CRA", "TMT"];
+const MedicalPackageIcons = [FullBody, Ovary, Heart, Lungs];
 const MedicalTests = ({
   allMedicalTests,
   setAllMedicalTests,
   selectedMedicalTests,
   setSelectedMedicalTests,
   setLoading,
+  loading,
 }) => {
   //Function is used for handling only the main 4 packages which are there.
   const [localTestSelect, setLocalTestSelect] = useState(null);
   const handleMainPackageSelect = (packageName) => {
-    setLocalTestSelect(packageName)
+    console.log(packageName);
+    setLocalTestSelect(packageName);
   };
   const fetchTestBundle = async () => {
     let config = {
@@ -69,44 +73,50 @@ const MedicalTests = ({
         </div>
         <div className="package_container flex flex-col space-y-1 mt-4">
           <div className="row_1 flex space-x-1">
-            <div
-              className="package_1 w-40 h-16 flex items-center p-4 justify-around  rounded-lg bg-mediumBlue"
-              onClick={(e) => {
-                handleMainPackageSelect("package_1");
-              }}
-            >
-              <img src={FullBody} />
-              <p className="font-semibold">Full Body</p>
-            </div>
-            <div
-              className="package_2 w-40 h-16 flex items-center p-4 justify-around  rounded-lg bg-mediumBlue"
-              onClick={(e) => {
-                handleMainPackageSelect("package_2");
-              }}
-            >
-              <img src={Ovary} />
-              <p className="font-semibold">Go Women!</p>
-            </div>
+            {MedicalPackageNames.map((packageName, index) => {
+              if (index < 2) {
+                return (
+                  <div
+                    className={`${
+                      localTestSelect == packageName
+                        ? "border-2 border-mediumBlue bg-slate-50 text-mediumBlue"
+                        : "package_1  bg-mediumBlue"
+                    } ${
+                      loading == false && "swing-in-top-fwd"
+                    } w-40 h-16 flex items-center p-4 justify-around  rounded-lg transition-all`}
+                    onClick={(e) => {
+                      handleMainPackageSelect(packageName);
+                    }}
+                  >
+                    <img src={MedicalPackageIcons[index]} />
+                    <p className="font-semibold">{packageName}</p>
+                  </div>
+                );
+              }
+            })}
           </div>
           <div className="row_2 flex space-x-1">
-            <div
-              className="package_3 w-40 h-16 flex items-center p-4 justify-around  rounded-lg bg-mediumBlue"
-              onClick={(e) => {
-                handleMainPackageSelect("package_3");
-              }}
-            >
-              <img src={Heart} />
-              <p className="font-semibold">CRA</p>
-            </div>
-            <div
-              className="package_4 w-40 h-16 flex items-center p-4 justify-around  rounded-lg bg-mediumBlue"
-              onClick={(e) => {
-                handleMainPackageSelect("package_4");
-              }}
-            >
-              <img src={Lungs} />
-              <p className="font-semibold">TMT</p>
-            </div>
+            {MedicalPackageNames.map((packageName, index) => {
+              if (index > 1) {
+                return (
+                  <div
+                    className={`${
+                      localTestSelect == packageName
+                        ? "border-2 border-mediumBlue bg-slate-50 text-mediumBlue"
+                        : "package_1  bg-mediumBlue"
+                    } ${
+                      loading == false && "swing-in-top-fwd"
+                    } w-40 h-16 flex items-center p-4 justify-around  rounded-lg transition-all `}
+                    onClick={(e) => {
+                      handleMainPackageSelect(packageName);
+                    }}
+                  >
+                    <img src={MedicalPackageIcons[index]} />
+                    <p className="font-semibold">{packageName}</p>
+                  </div>
+                );
+              }
+            })}
           </div>
         </div>
         <div className="absolute bottom-40 stading_medical_lady flex flex-col items-center">
