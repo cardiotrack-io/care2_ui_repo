@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import LandingPage from './Components/LandingPage'
+import LandingPage from './Components/Landing/LandingPage'
 import LoginPage from './Components/Login/LoginPage';
 import MedicalTests from './Components/MedicalTests/MedicalTests';
 //Globally declaring size of OTP
