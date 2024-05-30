@@ -48,6 +48,7 @@ function App() {
           selectedMedicalTests={selectedMedicalTests}
           setSelectedMedicalTests={setSelectedMedicalTests}
           setLoading ={setLoading}
+          loading = {loading}
         />
       )}
     </div>
