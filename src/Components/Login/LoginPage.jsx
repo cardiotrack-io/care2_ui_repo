@@ -156,7 +156,7 @@ function LoginPage({
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-start justify-center ">
+        <div className="flex flex-col items-center justify-center ">
           <div className="flex flex-col items-start justify-start mt-8 -space-y-1 welcome_message">
             <div className="welcome_text">
               <p className="font-bold tracking-tighter text-black">Welcome !</p>

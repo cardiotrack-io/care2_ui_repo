@@ -1,14 +1,15 @@
 # Project Readme: Cardiotrack
 
 ## How to install/run this Code.
-
+- Node version v20.12.2 or greater required 
 - git clone https://github.com/cardiotrack-io/care_rebuilt/tree/master
 - Navigate to the projects directory in CMD.
 - Once in the correct directory run
   - npm install
   - npm run dev
 
-
+## Animations 
+ - Reference - https://animista.net/
 ## Pages
 
 ### Landing Page
