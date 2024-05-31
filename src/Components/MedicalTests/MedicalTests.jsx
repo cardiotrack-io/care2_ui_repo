@@ -8,8 +8,8 @@ import axios from "axios";
 import TestAndDcApiEndPoints from "../../Constants/MedicalTestEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 import { useEffect, useState } from "react";
-const MedicalPackageNames = ["Full Body", "Go Women!", "CRA", "TMT"];
-const MedicalPackageIcons = [FullBody, Ovary, Heart, Lungs];
+import DisplayTestList from "../Utility/TestList";
+const MedicalPackageIcons = [Lungs, Ovary, Heart, FullBody];
 const MedicalTests = ({
   allMedicalTests,
   setAllMedicalTests,
@@ -18,13 +18,19 @@ const MedicalTests = ({
   setLoading,
   loading,
   setRegistrationState,
-  setMedicalTestState
+  setMedicalTestState,
 }) => {
   //Function is used for handling only the main 4 packages which are there.
   const [localTestSelect, setLocalTestSelect] = useState(null);
-  const [popupState , setPopupState] = useState(true)
+  const [indiviualTestList, setIndiviualTestList] = useState(null);
+  const [popupState, setPopupState] = useState(true);
   const handleMainPackageSelect = (packageName) => {
-    console.log(packageName);
+    allMedicalTests.map((ele) => {
+      if (ele.Insurer_Package_Name == packageName) {
+        console.log("Found it => ", ele.Package_Details);
+        setIndiviualTestList(ele.Package_Details);
+      }
+    });
     setLocalTestSelect(packageName);
   };
   const fetchTestBundle = async () => {
@@ -39,7 +45,11 @@ const MedicalTests = ({
     await axios
       .request(config)
       .then((response) => {
-        console.log(response.data);
+        console.log(response.data.data);
+        let temp = response.data.data;
+        temp.map((ele, index) => {
+          ele.Insurer_Package_Name;
+        });
         setAllMedicalTests(response.data.data);
         setLoading(false);
       })
@@ -47,7 +57,14 @@ const MedicalTests = ({
         console.log("Please check your internet connection");
       });
   };
+  const handleAddtest = () => {
+    if (localTestSelect != true) {
+      setPopupState(true);
+    }
+  };
   useEffect(() => {
+    setLoading(true);
+
     fetchTestBundle();
   }, []);
   return (
@@ -74,69 +91,86 @@ const MedicalTests = ({
             </p>
           </div>
         </div>
-        <div className="package_container flex flex-col space-y-1 mt-4">
-          <div className="row_1 flex space-x-1">
-            {MedicalPackageNames.map((packageName, index) => {
-              if (index < 2) {
-                return (
-                  <div
-                    className={`${
-                      localTestSelect == packageName
-                        ? "border-2 border-mediumBlue bg-lightBlue text-mediumBlue"
-                        : "package_1  bg-mediumBlue"
-                    } ${
-                      loading == false && "swing-in-top-fwd"
-                    } w-40 h-16 flex items-center p-4 justify-around  rounded-lg transition-all`}
-                    onClick={(e) => {
-                      handleMainPackageSelect(packageName);
-                    }}
-                  >
-                    <img src={MedicalPackageIcons[index]} />
-                    <p className="font-semibold">{packageName}</p>
-                  </div>
-                );
-              }
-            })}
+        {allMedicalTests && (
+          <>
+            <div className="package_container flex flex-col space-y-1 mt-4">
+              <div className="row_1 flex space-x-1">
+                {allMedicalTests.map((packageName, index) => {
+                  if (index < 2) {
+                    return (
+                      <div
+                        className={`${
+                          localTestSelect == packageName.Insurer_Package_Name
+                            ? "border-2 border-mediumBlue bg-lightBlue text-mediumBlue"
+                            : "package_1  bg-mediumBlue"
+                        } ${
+                          loading == false && "swing-in-top-fwd"
+                        } w-40 h-16 flex items-center p-4 justify-around  rounded-lg transition-all`}
+                        onClick={(e) => {
+                          handleMainPackageSelect(
+                            packageName.Insurer_Package_Name
+                          );
+                        }}
+                      >
+                        <img src={MedicalPackageIcons[index]} />
+                        <p className="font-semibold text-xs">
+                          {packageName.Insurer_Package_Name}
+                        </p>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+              <div className="row_2 flex space-x-1">
+                {allMedicalTests.map((packageName, index) => {
+                  if (index > 1) {
+                    return (
+                      <div
+                        className={`${
+                          localTestSelect == packageName.Insurer_Package_Name
+                            ? "border-2 border-mediumBlue bg-lightBlue text-mediumBlue"
+                            : "package_1  bg-mediumBlue"
+                        } ${
+                          loading == false && "swing-in-top-fwd"
+                        } w-40 h-16 flex items-center p-4 justify-around  rounded-lg transition-all `}
+                        onClick={(e) => {
+                          handleMainPackageSelect(
+                            packageName.Insurer_Package_Name
+                          );
+                        }}
+                      >
+                        <img src={MedicalPackageIcons[index]} />
+                        <p className="font-semibold text-xs">
+                          {packageName.Insurer_Package_Name}
+                        </p>
+                      </div>
+                    );
+                  }
+                })}
+              </div>
+            </div>
+          </>
+        )}
+        {indiviualTestList == null && (
+          <div className="absolute bottom-40 stading_medical_lady flex flex-col items-center">
+            <img src={StandingMedicalLady} />
+            <p className=" font-bold text-mediumBlue">No Packages Selected</p>
+            <p className=" underline text-mediumBlue text-sm ">
+              Please Select to Proceed
+            </p>
           </div>
-          <div className="row_2 flex space-x-1">
-            {MedicalPackageNames.map((packageName, index) => {
-              if (index > 1) {
-                return (
-                  <div
-                    className={`${
-                      localTestSelect == packageName
-                        ? "border-2 border-mediumBlue bg-lightBlue text-mediumBlue"
-                        : "package_1  bg-mediumBlue"
-                    } ${
-                      loading == false && "swing-in-top-fwd"
-                    } w-40 h-16 flex items-center p-4 justify-around  rounded-lg transition-all `}
-                    onClick={(e) => {
-                      handleMainPackageSelect(packageName);
-                    }}
-                  >
-                    <img src={MedicalPackageIcons[index]} />
-                    <p className="font-semibold">{packageName}</p>
-                  </div>
-                );
-              }
-            })}
+        )}
+        {indiviualTestList && (
+          <div className="test_container">
+            <DisplayTestList indiviualTestList= {indiviualTestList} />
           </div>
-        </div>
-        <div className="absolute bottom-40 stading_medical_lady flex flex-col items-center">
-          <img src={StandingMedicalLady} />
-          <p className=" font-bold text-mediumBlue">No Tests Selected</p>
-          <p className=" underline text-mediumBlue text-sm ">
-            Click to Add Test
-          </p>
-        </div>
-        <div className="absolute flex   w-11/12 pb-4 text-center justify-between bottom-2 items-center space-x-2">
-          <button className="w-1/2 starting_button bg-darkGray lg:w-1/4">
-            <p className="font-light text-white">Add Test</p>
-          </button>
-          <button className="w-1/2 starting_button bg-darkGray lg:w-1/4"
+        )}
+        <div className="absolute flex   w-11/12 pb-4 text-center justify-center bottom-2 items-center space-x-2">
+          <button
+            className="w-full starting_button bg-darkGray lg:w-1/4"
             onClick={(e) => {
-              setMedicalTestState(false)
-              setRegistrationState(true)
+              setMedicalTestState(false);
+              setRegistrationState(true);
             }}
           >
             <p className="font-light text-white">Proceed</p>

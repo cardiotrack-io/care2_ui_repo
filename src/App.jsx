@@ -9,21 +9,26 @@ import Registration from "./Components/CustomerRegistration/Registration";
 const OTPSize = 6;
 function App() {
   //All the variables which i would need are present here.
-  const [landingState, setLandingState] = useState(false);
+
+  //Page States
+  const [landingState, setLandingState] = useState(true);
   const [loginState, setLoginState] = useState(false);
-  const [medicalTestState, setMedicalTestState] = useState(false);
+  const [medicalTestState, setMedicalTestState] = useState(true);
   const [registrationState, setRegistrationState] = useState(false);
-  const [customerPhone, setCustomerPhone] = useState(null);
-  const [allMedicalTests, setAllMedicalTests] = useState(null);
-  const [selectedMedicalTests, setSelectedMedicalTests] = useState(null);
-  const [employeeStatus, setEmployeeStatus] = useState(false);
-  const [otp, setOtp] = useState(new Array(OTPSize).fill(""));
-  const [loading, setLoading] = useState(false);
-  const [appointmentDate, setAppointmentDate] = useState("");
-  const [appointmentTime, setAppointmentTime] = useState("");
+  //Customer Details
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [promoCode, setPromoCode] = useState("");
+  const [customerPhone, setCustomerPhone] = useState(null);
+  const [employeeStatus, setEmployeeStatus] = useState(false);
+  //Appointment Details
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  //Medical Details
+  const [allMedicalTests, setAllMedicalTests] = useState(null);
+  const [selectedMedicalTests, setSelectedMedicalTests] = useState(null);
+  const [otp, setOtp] = useState(new Array(OTPSize).fill(""));
+  const [loading, setLoading] = useState(false);
   return (
     <div className="">
       {loading == true && (
