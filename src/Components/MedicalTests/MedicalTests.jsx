@@ -17,9 +17,12 @@ const MedicalTests = ({
   setSelectedMedicalTests,
   setLoading,
   loading,
+  setRegistrationState,
+  setMedicalTestState
 }) => {
   //Function is used for handling only the main 4 packages which are there.
   const [localTestSelect, setLocalTestSelect] = useState(null);
+  const [popupState , setPopupState] = useState(true)
   const handleMainPackageSelect = (packageName) => {
     console.log(packageName);
     setLocalTestSelect(packageName);
@@ -79,7 +82,7 @@ const MedicalTests = ({
                   <div
                     className={`${
                       localTestSelect == packageName
-                        ? "border-2 border-mediumBlue bg-slate-50 text-mediumBlue"
+                        ? "border-2 border-mediumBlue bg-lightBlue text-mediumBlue"
                         : "package_1  bg-mediumBlue"
                     } ${
                       loading == false && "swing-in-top-fwd"
@@ -102,7 +105,7 @@ const MedicalTests = ({
                   <div
                     className={`${
                       localTestSelect == packageName
-                        ? "border-2 border-mediumBlue bg-slate-50 text-mediumBlue"
+                        ? "border-2 border-mediumBlue bg-lightBlue text-mediumBlue"
                         : "package_1  bg-mediumBlue"
                     } ${
                       loading == false && "swing-in-top-fwd"
@@ -130,7 +133,12 @@ const MedicalTests = ({
           <button className="w-1/2 starting_button bg-darkGray lg:w-1/4">
             <p className="font-light text-white">Add Test</p>
           </button>
-          <button className="w-1/2 starting_button bg-darkGray lg:w-1/4">
+          <button className="w-1/2 starting_button bg-darkGray lg:w-1/4"
+            onClick={(e) => {
+              setMedicalTestState(false)
+              setRegistrationState(true)
+            }}
+          >
             <p className="font-light text-white">Proceed</p>
           </button>
         </div>

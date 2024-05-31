@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import './App.css'
-import LandingPage from './Components/Landing/LandingPage'
-import LoginPage from './Components/Login/LoginPage';
-import MedicalTests from './Components/MedicalTests/MedicalTests';
-import Loading from './Components/Utility/Loading';
+import { useState } from "react";
+import "./App.css";
+import LandingPage from "./Components/Landing/LandingPage";
+import LoginPage from "./Components/Login/LoginPage";
+import MedicalTests from "./Components/MedicalTests/MedicalTests";
+import Loading from "./Components/Utility/Loading";
+import Registration from "./Components/CustomerRegistration/Registration";
 //Globally declaring size of OTP
 const OTPSize = 6;
 function App() {
+  //All the variables which i would need are present here.
   const [landingState, setLandingState] = useState(false);
-  const [loginState, setLoginState] = useState(false)
-  const [medicalTestState, setMedicalTestState] = useState(false)
+  const [loginState, setLoginState] = useState(false);
+  const [medicalTestState, setMedicalTestState] = useState(false);
+  const [registrationState, setRegistrationState] = useState(false);
   const [customerPhone, setCustomerPhone] = useState(null);
   const [allMedicalTests, setAllMedicalTests] = useState(null);
-  const [selectedMedicalTests, setSelectedMedicalTests] = useState(null)
+  const [selectedMedicalTests, setSelectedMedicalTests] = useState(null);
   const [employeeStatus, setEmployeeStatus] = useState(false);
   const [otp, setOtp] = useState(new Array(OTPSize).fill(""));
-  const [loading , setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [promoCode, setPromoCode] = useState("");
   return (
-    < div className=''>
-      {(loading == true) && (
+    <div className="">
+      {loading == true && (
         <div className="loading_container absolute bg-slate-900 ">
           <Loading />
         </div>
       )}
-      {(landingState == false) && (
+      {landingState == false && (
         <LandingPage
           setLandingState={setLandingState}
           setLoginState={setLoginState}
         />
       )}
-      {(loginState == true) && (
+      {loginState == true && (
         <LoginPage
           customerPhone={customerPhone}
           setCustomerPhone={setCustomerPhone}
@@ -37,22 +45,36 @@ function App() {
           setOtp={setOtp}
           loginState={loginState}
           setLoginState={setLoginState}
-          setMedicalTestState = {setMedicalTestState}
-          setLoading ={setLoading}
+          setMedicalTestState={setMedicalTestState}
+          setLoading={setLoading}
         />
       )}
-      {(medicalTestState == true) && (
+      {medicalTestState == true && (
         <MedicalTests
           allMedicalTests={allMedicalTests}
           setAllMedicalTests={setAllMedicalTests}
           selectedMedicalTests={selectedMedicalTests}
           setSelectedMedicalTests={setSelectedMedicalTests}
-          setLoading ={setLoading}
-          loading = {loading}
+          setLoading={setLoading}
+          loading={loading}
+          setRegistrationState={setRegistrationState}
+          setMedicalTestState={setMedicalTestState}
+        />
+      )}
+      {registrationState == true && (
+        <Registration
+          customerName={customerName}
+          setCustomerName={setCustomerName}
+          customerAddress={customerAddress}
+          setCustomerAddress={setCustomerAddress}
+          appointmentDate={appointmentDate}
+          setAppointmentDate={setAppointmentDate}
+          appointmentTime={appointmentTime}
+          setAppointmentTime={setAppointmentTime}
         />
       )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
