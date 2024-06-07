@@ -36,7 +36,7 @@ function App() {
           <Loading />
         </div>
       )}
-      {landingState == false && (
+      {landingState == true && (
         <LandingPage
           setLandingState={setLandingState}
           setLoginState={setLoginState}
