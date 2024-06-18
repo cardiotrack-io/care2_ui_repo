@@ -1,0 +1,18 @@
+.rounded-checkbox {
+  width: 15px;
+  height: 15px;
+  vertical-align: middle;
+  border: 1px solid black;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #026A9D;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.rounded-checkbox:checked {
+  appearance: auto;
+  background-color: #026A9D;
+}

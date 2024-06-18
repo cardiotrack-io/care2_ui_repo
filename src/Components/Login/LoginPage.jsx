@@ -213,12 +213,12 @@ function LoginPage({
                   console.log(validity);
                   setErrorState(validity);
                   if (!validity.error_status) {
-                    setLoading(true)
+                    setLoading(false)
                     sendOTP(customerPhone);
                   }
                 } else if (phoneStatus == true && OTPStatus == false) {
                   let joinedOTP = otp.join("");
-                  setLoading(true)
+                  setLoading(false)
                   getOtpValidationStatus(joinedOTP, customerPhone);
                 }
               }}

@@ -3,6 +3,7 @@ import "./App.css";
 import LandingPage from "./Components/Landing/LandingPage";
 import LoginPage from "./Components/Login/LoginPage";
 import MedicalTests from "./Components/MedicalTests/MedicalTests";
+import MedicalTestsPicker from "./Components/MedicalTestsPicker/MedicalTestsPicker";
 import Loading from "./Components/Utility/Loading";
 import Registration from "./Components/CustomerRegistration/Registration";
 //Globally declaring size of OTP
@@ -12,9 +13,10 @@ function App() {
 
   //Page States
   const [landingState, setLandingState] = useState(true);
-  const [loginState, setLoginState] = useState(false);
+  const [loginState, setLoginState] = useState(true);
   const [medicalTestState, setMedicalTestState] = useState(true);
-  const [registrationState, setRegistrationState] = useState(false);
+  const [medicalTestsPickerState, setMedicalTestsPickerState] = useState(true);
+  const [registrationState, setRegistrationState] = useState(true);
   //Customer Details
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
@@ -26,7 +28,12 @@ function App() {
   const [appointmentTime, setAppointmentTime] = useState("");
   //Medical Details
   const [allMedicalTests, setAllMedicalTests] = useState(null);
+  const [allIndividualTests, setAllIndividualTests] = useState(null);
+  const [selectedMedicalTestIndividualList, setSelectedMedicalTestIndividualList] = useState(null)
+  const [selectedIndividualList, setSelectedIndividualList] = useState(null)
+  const [selectedIndividualListCost, setSelectedIndividualListCost] = useState(null)
   const [selectedMedicalTests, setSelectedMedicalTests] = useState(null);
+  const [selectedMedicalTestsPackageCost, setSelectedMedicalTestsPackageCost] = useState(null);
   const [otp, setOtp] = useState(new Array(OTPSize).fill(""));
   const [loading, setLoading] = useState(false);
   return (
@@ -58,12 +65,36 @@ function App() {
         <MedicalTests
           allMedicalTests={allMedicalTests}
           setAllMedicalTests={setAllMedicalTests}
+          allIndividualTests={allIndividualTests}
+          setAllIndividualTests={setAllIndividualTests}
           selectedMedicalTests={selectedMedicalTests}
           setSelectedMedicalTests={setSelectedMedicalTests}
+          selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
+          setSelectedMedicalTestsPackageCost={setSelectedMedicalTestsPackageCost}
+          selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
+          setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
           setLoading={setLoading}
           loading={loading}
-          setRegistrationState={setRegistrationState}
+          setMedicalTestsPickerState={setMedicalTestsPickerState}
           setMedicalTestState={setMedicalTestState}
+        />
+      )}
+      {medicalTestsPickerState == true && (
+        <MedicalTestsPicker
+          selectedMedicalTests={selectedMedicalTests}
+          setSelectedMedicalTests={setSelectedMedicalTests}
+          selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
+          setSelectedMedicalTestsPackageCost={setSelectedMedicalTestsPackageCost}
+          allIndividualTests={allIndividualTests}
+          setAllIndividualTests={setAllIndividualTests}
+          selectedIndividualList={selectedIndividualList}
+          setSelectedIndividualList={setSelectedIndividualList}
+          selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
+          setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
+          selectedIndividualListCost={selectedIndividualListCost}
+          setSelectedIndividualListCost={setSelectedIndividualListCost}
+          setMedicalTestsPickerState={setMedicalTestsPickerState}
+          setRegistrationState={setRegistrationState}
         />
       )}
       {registrationState == true && (

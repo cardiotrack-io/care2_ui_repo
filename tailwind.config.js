@@ -24,6 +24,7 @@ export default {
         navyBlue: "#0283C1",
         paleBlue2: "#D7ECF4",
         inputWhite: "#F5F5F5",
+        lightBlueBG: "#D7ECF4F2",
       },
       animation: {
         bounce200: "bounce 1s infinite 200ms",

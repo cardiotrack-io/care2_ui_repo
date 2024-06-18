@@ -8,6 +8,10 @@
   - npm install
   - npm run dev
 
+## Design 
+- v1 https://www.figma.com/board/mQGCGBSmNdgjMtHpzdJnJC/Care-Rebulit?node-id=0-1
+- v2 (https://www.figma.com/design/D8bw31iKEdjezP48Hrif27/Care-Rebulit?node-id=2-3091)
+
 ## Animations 
  - Reference - https://animista.net/
 ## Pages
