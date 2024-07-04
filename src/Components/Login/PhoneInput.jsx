@@ -32,7 +32,7 @@ function PhoneInput({ errorState, setErrorState, customerPhone, setCustomerPhone
                     <p className="font-bold text-black" >+91</p>
                 </div>
                 <div className="phone_input">
-                    <input type="tel" name="customer_phone" className="w-11/12 h-8 px-2 font-medium text-black border-2 rounded-md bg-inputWhite focus:ring-paleBlue border-paleBlue" value={customerPhone} onChange={(e) => {
+                    <input type="tel" name="customer_phone" className="w-11/12 h-8 px-2 font-medium text-black border-2 rounded-md bg-inputWhite focus:ring-paleBlue border-paleBlue" value={customerPhone || ''} onChange={(e) => {
                         handlePhoneInput(e.target.value)
                     }} />
                 </div>

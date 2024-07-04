@@ -1,10 +1,10 @@
 import "./LandingPage.css";
 
-function LandingPage({ setLandingState, setLoginState }) {
+function LandingPage({ setCurrentPage }) {
   function handleGetStarted() {
-    setLandingState(true);
-    setLoginState(true);
+    setCurrentPage("login");
   }
+
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-screen">
       <div className="flip-in-hor-top absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/2">
@@ -32,9 +32,7 @@ function LandingPage({ setLandingState, setLoginState }) {
         <div className="w-full starting_button scale-in-ver-top">
           <button
             className="w-11/12 starting_button bg-darkGray lg:w-1/4"
-            onClick={(e) => {
-              handleGetStarted();
-            }}
+            onClick={handleGetStarted}
           >
             <p className="font-light text-white">Get Started</p>
           </button>

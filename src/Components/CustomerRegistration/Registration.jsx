@@ -1,7 +1,18 @@
+import React, { useState } from "react";
 import TestPlus from "../../assets/test_plus.svg";
 import AppointmentDateIcon from "../../assets/AppointmentIcons/AppointmentDate.svg";
 import AppointmentTimeIcon from "../../assets/AppointmentIcons/AppointmentTime.svg";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import CustomerDetailsForm from "./CustomerDetailsForm";
+import { format } from "date-fns";
+import axios from "axios";
+import backEndUrl from "../../Constants/backEndURL";
+import AuthorizationKey from "../../Constants/AuthorizationKey";
+
 const Registration = ({
   customerName,
   setCustomerName,
@@ -11,66 +22,366 @@ const Registration = ({
   setAppointmentDate,
   appointmentTime,
   setAppointmentTime,
+  setCurrentPage,
+  selectedIndividualList,
+  total,
+  setTotal,
 }) => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [promocode, setPromocode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(total);
+  const [timeError, setTimeError] = useState(""); // State for time error message
+
+  const getFormattedTime = () => {
+    return appointmentTime
+      ? dayjs(appointmentTime, "HH:mm").format("hh:mm A")
+      : "Select time";
+  };
+
+  const calculateTotal = () => {
+    const newTotal = total - discount;
+    setTotalAfterDiscount(newTotal);
+    console.log(newTotal);
+  };
+
+  const applyPromocode = () => {
+    if (promocode === "SAVE10") {
+      setDiscount(10); // Example discount for a specific promocode
+    } else {
+      setDiscount(0);
+    }
+    calculateTotal();
+  };
+
+  const loadRazorpay = async () => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+
+    script.onload = async () => {
+      handlePayment();
+    };  
+    script.onerror = () => {
+      alert("Razorpay SDK failed to load. Are you online?");
+    };
+    document.body.appendChild(script);
+  };
+
+  const handlePayment = async () => {
+    try {
+      const requestData = {
+        amount: totalAfterDiscount, // Amount in paise
+        currency: "INR",
+        receipt: "test-order",
+      };
+
+      const response = await axios.post(
+        `${backEndUrl}/care/payment/order`,
+        requestData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Basic Y2xpZW50LXVpLWJhY2tlbmQ6NW9VOCxGXjo3LyNE",
+          },
+        }
+      );
+      console.log(response.data, response.data.id + "Response");
+
+      if (response.data && response.data.id) {
+        displayCheckout(response.data.amount, response.data.id);
+      } else {
+        console.error("Invalid response from backend API", response.data);
+      }
+    } catch (error) {
+      console.error(
+        "Error creating order:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
+
+  const displayCheckout = (amount, orderId) => {
+    const options = {
+      key: "rzp_test_0ZYAW8AHo0mI32", // Use your Razorpay test/live key here
+      amount: amount,
+      currency: "INR",
+      name: "Cardiotrack Care",
+      description: "Test Transaction",
+      order_id: orderId,
+      handler: async function (response) {
+        const data = {
+          order_id: orderId,
+          payment_id: response.razorpay_payment_id,
+          signature: response.razorpay_signature,
+        };
+
+        try {
+          const verificationResponse = await axios.post(
+            `https://api.razorpay.com/v1/orders`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Basic Y2xpZW50LXVpLWJhY2tlbmQ6NW9VOCxGXjo3LyNE`,
+              },
+            }
+          );
+          if (verificationResponse.data.success) {
+            alert("Payment is successful");
+          } else {
+            alert("Invalid signature, payment verification failed");
+          }
+        } catch (error) {
+          console.error(
+            "Error verifying payment:",
+            error.response ? error.response.data : error.message
+          );
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          console.log("Modal closed");
+        },
+      },
+      prefill: {
+        name: `${customerName.firstName} ${customerName.lastName}`,
+        email: "example@example.com",
+        contact: "9999999999",
+      },
+      notes: {
+        address: `${customerAddress.addressLine1} ${customerAddress.addressLine2}`,
+      },
+      theme: {
+        color: "#61dafb",
+      },
+    };
+    let paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+  };
+
+  const handleTimeChange = (newValue) => {
+    const selectedDate = dayjs(appointmentDate).startOf("day");
+    const currentTime = dayjs();
+    const endOfDay = selectedDate.add(22, "hours"); // 10 PM
+    let isValid = false;
+
+    if (selectedDate.isSame(dayjs().startOf("day"))) {
+      // Today: Allow times from current time to 10 PM
+      if (newValue.isAfter(currentTime) && newValue.isBefore(endOfDay)) {
+        isValid = true;
+      }
+    } else {
+      // Any other day: Allow times from 8 AM to 10 PM
+      const startOfDay = selectedDate.add(8, "hours"); // 8 AM
+      if (newValue.isAfter(startOfDay) && newValue.isBefore(endOfDay)) {
+        isValid = true;
+      }
+    }
+
+    if (isValid) {
+      setAppointmentTime(newValue.format("HH:mm"));
+      setTimeError(""); // Clear error if the time is valid
+    } else {
+      setTimeError("Invalid time selected. Please select a time between 8 AM and 10 PM."); // Set error message if the time is invalid
+    }
+    setShowTimePicker(false);
+    calculateTotal();
+  };
+
+  const navigateToHomePage = () => {
+    const userConfirmed = window.confirm("Do you want to navigate to the home page?");
+    if (userConfirmed) {
+      window.location.href = "/";
+    }
+  };
+
   return (
     <>
       <div className="relative flex flex-col w-full h-screen px-6 items-center">
         <div className="container mt-11">
-          <div className="header_container flex justify-between items-center">
-            <div className="flex flex-row ">
-              <p className="font-bold text-black slide-in-blurred-top text-lg">
-                Cardiotrack{" "}
-              </p>
-              <p className=" text-black slide-in-blurred-top text-lg">
-                &nbsp;Care{" "}
-              </p>
+          <div className="header_container flex justify-center items-center">
+            <div className="flex flex-col -space-y-4 slide-in-left">
+              <div className="cardiotrack" onClick={navigateToHomePage}>
+                <p className="font-bold text-black cursor-pointer">Cardiotrack</p>
+              </div>
+              <div className="flex justify-center space-x-1 care-medical-test">
+                <div className="care">
+                  <p className="tracking-tighter text-black">Care</p>
+                </div>
+                <div className="flex items-center justify-center medical-test">
+                  <p className="px-4 tracking-tighter rounded-lg text-navyBlue bg-paleBlue">
+                    Medical Home Visit
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="plus_container">
-              <img src={TestPlus} />
+              <img src={TestPlus} alt="Test Plus" />
             </div>
           </div>
-          <div className="flex justify-start">
-            <p className="text-darkBlue text-sm font-semibold ">
+          <div className="flex justify-start mt-6">
+            <p className="text-darkBlue text-sm font-semibold">
               Appointment Details
             </p>
           </div>
-          <div className="appointment_details_container flex space-x-4 mt-2">
-            <div className="appointment_date relative">
-              <img
-                src={AppointmentDateIcon}
-                alt="appointment_date_icon"
-                className="w-full h-full"
-              />
-              <div className="absolute top-3 left-0 w-full h-full  px-6  flex items-center justify-end">
-                <p className="text-darkBlue text-xs font-semibold">12-3-2024</p>
-              </div>
+          <div className="appointment_details_container flex flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-2">
+            <div className="appointment_date relative w-full md:w-1/2">
+              {showDatePicker ? (
+                <DatePicker
+                  selected={appointmentDate}
+                  onChange={(date) => {
+                    setAppointmentDate(date);
+                    setShowDatePicker(false);
+                  }}
+                  className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  inline
+                  minDate={new Date()} // Today as minDate
+                  maxDate={
+                    new Date(new Date().setDate(new Date().getDate() + 15))
+                  } // 15 days from today as maxDate
+                />
+              ) : (
+                <div onClick={() => setShowDatePicker(true)}>
+                  <img
+                    src={AppointmentDateIcon}
+                    alt="appointment_date_icon"
+                    className="w-full h-full cursor-pointer"
+                  />
+                  <div className="absolute top-3 left-0 w-full h-full px-6 flex items-center justify-center">
+                    <p className="text-darkBlue text-md font-bold">
+                      {appointmentDate
+                        ? format(appointmentDate, "dd-MM-yy")
+                        : "Select date"}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="appointment_time relative">
-              <img
-                src={AppointmentTimeIcon}
-                alt="appointment_time_icon"
-                className="w-full h-full"
-              />
-              <div className="absolute top-3 left-0 w-full h-full  px-7  flex items-center justify-end">
-                <p className="text-darkBlue text-xs font-semibold">08:00 Am</p>
-              </div>
+            <div className="appointment_time relative w-full md:w-1/2 text-black">
+              {showTimePicker ? (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <MobileTimePicker
+                    open={showTimePicker}
+                    onClose={() => setShowTimePicker(false)}
+                    value={
+                      appointmentTime ? dayjs(appointmentTime, "HH:mm") : null
+                    }
+                    onAccept={handleTimeChange}
+                    slotProps={{
+                      textField: {
+                        variant: "outlined",
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              ) : (
+                <div onClick={() => setShowTimePicker(true)}>
+                  <img
+                    src={AppointmentTimeIcon}
+                    alt="appointment_time_icon"
+                    className="w-full h-full cursor-pointer"
+                  />
+                  <div className="absolute top-3 left-0 w-full h-full px-7 flex items-center justify-center">
+                    <p className="text-darkBlue text-md font-bold">
+                      {getFormattedTime()}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {timeError && (
+                <div className="text-red-500 text-sm mt-2">{timeError}</div>
+              )}
             </div>
           </div>
-          <div className="details_container">
+          <div className="details_container mt-6">
             <div className="details_title">
-              <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold ">
+              <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
                 Your Details
               </p>
             </div>
-            <div className="cutomer_form_container mt-4">
+            <div className="customer_form_container mt-4">
               <CustomerDetailsForm
                 customerName={customerName}
                 setCustomerName={setCustomerName}
                 customerAddress={customerAddress}
                 setCustomerAddress={setCustomerAddress}
+                appointmentDate={appointmentDate}
+                setAppointmentDate={setAppointmentDate}
+                appointmentTime={appointmentTime}
+                setAppointmentTime={setAppointmentTime}
+                setCurrentPage={setCurrentPage}
               />
             </div>
           </div>
+        </div>
+        <div className="container mt-5">
+          <div className="flex justify-start">
+            <p className="text-darkBlue text-sm font-semibold">Your Tests</p>
+          </div>
+          <div className="flex flex-col md:flex-row md:flex-wrap py-4 px-2 rounded-md bg-blue-400 bg-opacity-20 space-y-2 md:space-y-0">
+            {selectedIndividualList.map((test, index) => (
+              <div
+                key={index}
+                className="w-full md:w-1/2 text-sm font-semibold text-darkBlue md:py-2"
+              >
+                {test}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="promocode_container mt-6">
+          <div className="promocode_title">
+            <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
+              Promocode
+            </p>
+          </div>
+          <div className="mt-4 flex space-x-4">
+            <input
+              type="text"
+              value={promocode}
+              onChange={(e) => setPromocode(e.target.value)}
+              className="border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2 w-full"
+              placeholder="Enter promocode"
+            />
+            <button
+              onClick={applyPromocode}
+              className="px-4 py-2 bg-darkBlue text-white rounded-md"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+        <div className="total_container mt-6">
+          <div className="total_title">
+            <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
+              Total Amount
+            </p>
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <p className="text-darkBlue text-md font-bold">
+              <span className="line-through">{total}</span>
+              <span className="ml-2">{totalAfterDiscount}</span>
+            </p>
+          </div>
+        </div>
+        <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
+          <button
+            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
+            onClick={() => {
+              // Mark as COD
+            }}
+          >
+            <p className="font-light text-white text-center">Pay Later</p>
+          </button>
+          <button
+            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
+            onClick={loadRazorpay}
+          >
+            <p className="font-light text-white text-center">Pay Now</p>
+          </button>
         </div>
       </div>
     </>

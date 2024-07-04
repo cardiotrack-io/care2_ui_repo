@@ -6,109 +6,128 @@ import MedicalTests from "./Components/MedicalTests/MedicalTests";
 import MedicalTestsPicker from "./Components/MedicalTestsPicker/MedicalTestsPicker";
 import Loading from "./Components/Utility/Loading";
 import Registration from "./Components/CustomerRegistration/Registration";
-//Globally declaring size of OTP
-const OTPSize = 6;
-function App() {
-  //All the variables which i would need are present here.
 
-  //Page States
-  const [landingState, setLandingState] = useState(true);
-  const [loginState, setLoginState] = useState(true);
-  const [medicalTestState, setMedicalTestState] = useState(true);
-  const [medicalTestsPickerState, setMedicalTestsPickerState] = useState(true);
-  const [registrationState, setRegistrationState] = useState(true);
-  //Customer Details
+// Globally declaring size of OTP
+const OTP_SIZE = 6;
+
+function App() {
+  // State to track the current page
+  const [currentPage, setCurrentPage] = useState("landing");
+
+  // Customer Details
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [customerPhone, setCustomerPhone] = useState(null);
   const [employeeStatus, setEmployeeStatus] = useState(false);
-  //Appointment Details
+
+  // Appointment Details
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
-  //Medical Details
+
+  // Medical Details
   const [allMedicalTests, setAllMedicalTests] = useState(null);
   const [allIndividualTests, setAllIndividualTests] = useState(null);
-  const [selectedMedicalTestIndividualList, setSelectedMedicalTestIndividualList] = useState(null)
-  const [selectedIndividualList, setSelectedIndividualList] = useState(null)
-  const [selectedIndividualListCost, setSelectedIndividualListCost] = useState(null)
+  const [selectedMedicalTestIndividualList, setSelectedMedicalTestIndividualList] = useState(null);
+  const [selectedIndividualList, setSelectedIndividualList] = useState(null);
+  const [selectedIndividualListCost, setSelectedIndividualListCost] = useState(null);
   const [selectedMedicalTests, setSelectedMedicalTests] = useState(null);
   const [selectedMedicalTestsPackageCost, setSelectedMedicalTestsPackageCost] = useState(null);
-  const [otp, setOtp] = useState(new Array(OTPSize).fill(""));
+
+  const [otp, setOtp] = useState(new Array(OTP_SIZE).fill(""));
   const [loading, setLoading] = useState(false);
-  return (
-    <div className="">
-      {loading == true && (
-        <div className="loading_container absolute bg-slate-900 ">
-          <Loading />
-        </div>
-      )}
-      {landingState == true && (
-        <LandingPage
-          setLandingState={setLandingState}
-          setLoginState={setLoginState}
-        />
-      )}
-      {loginState == true && (
-        <LoginPage
-          customerPhone={customerPhone}
-          setCustomerPhone={setCustomerPhone}
-          otp={otp}
-          setOtp={setOtp}
-          loginState={loginState}
-          setLoginState={setLoginState}
-          setMedicalTestState={setMedicalTestState}
-          setLoading={setLoading}
-        />
-      )}
-      {medicalTestState == true && (
-        <MedicalTests
-          allMedicalTests={allMedicalTests}
-          setAllMedicalTests={setAllMedicalTests}
-          allIndividualTests={allIndividualTests}
-          setAllIndividualTests={setAllIndividualTests}
+  const [total, setTotal] = useState(0);
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case "landing":
+        return (
+          <LandingPage
+            setCurrentPage={setCurrentPage}
+          />
+        );
+      case "login":
+        return (
+          <LoginPage
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            otp={otp}
+            setOtp={setOtp}
+            setCurrentPage={setCurrentPage}
+            setLoading={setLoading}
+          />
+        );
+      case "medicalTest":
+        return (
+          <MedicalTests
+            allMedicalTests={allMedicalTests}
+            setAllMedicalTests={setAllMedicalTests}
+            allIndividualTests={allIndividualTests}
+            setAllIndividualTests={setAllIndividualTests}
+            selectedMedicalTests={selectedMedicalTests}
+            setSelectedMedicalTests={setSelectedMedicalTests}
+            selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
+            setSelectedMedicalTestsPackageCost={setSelectedMedicalTestsPackageCost}
+            setSelectedIndividualList={setSelectedIndividualList}
+            selectedIndividualListCost={selectedIndividualListCost}
+            setSelectedIndividualListCost={setSelectedIndividualListCost}
+            selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
+            setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
+            setLoading={setLoading}
+            loading={loading}
+            setCurrentPage={setCurrentPage}
+          />
+        );
+      case "medicalTestsPicker":
+        return (
+          <MedicalTestsPicker
           selectedMedicalTests={selectedMedicalTests}
           setSelectedMedicalTests={setSelectedMedicalTests}
           selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
           setSelectedMedicalTestsPackageCost={setSelectedMedicalTestsPackageCost}
-          selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
-          setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
-          setLoading={setLoading}
-          loading={loading}
-          setMedicalTestsPickerState={setMedicalTestsPickerState}
-          setMedicalTestState={setMedicalTestState}
-        />
-      )}
-      {medicalTestsPickerState == true && (
-        <MedicalTestsPicker
-          selectedMedicalTests={selectedMedicalTests}
-          setSelectedMedicalTests={setSelectedMedicalTests}
-          selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
-          setSelectedMedicalTestsPackageCost={setSelectedMedicalTestsPackageCost}
+          total={total}
+          setTotal={setTotal}
           allIndividualTests={allIndividualTests}
           setAllIndividualTests={setAllIndividualTests}
           selectedIndividualList={selectedIndividualList}
           setSelectedIndividualList={setSelectedIndividualList}
-          selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
-          setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
           selectedIndividualListCost={selectedIndividualListCost}
           setSelectedIndividualListCost={setSelectedIndividualListCost}
-          setMedicalTestsPickerState={setMedicalTestsPickerState}
-          setRegistrationState={setRegistrationState}
-        />
+          selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
+          setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
+          setCurrentPage={setCurrentPage}
+          />
+        );
+      case "registration":
+        return (
+          <Registration
+            selectedIndividualList={selectedIndividualList}
+            total={total}
+            setTotal={setTotal}
+            customerName={customerName}
+            setCustomerName={setCustomerName}
+            customerAddress={customerAddress}
+            setCustomerAddress={setCustomerAddress}
+            appointmentDate={appointmentDate}
+            setAppointmentDate={setAppointmentDate}
+            appointmentTime={appointmentTime}
+            setAppointmentTime={setAppointmentTime}
+            setCurrentPage={setCurrentPage}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="">
+      {loading && (
+        <div className="loading_container absolute bg-slate-900">
+          <Loading />
+        </div>
       )}
-      {registrationState == true && (
-        <Registration
-          customerName={customerName}
-          setCustomerName={setCustomerName}
-          customerAddress={customerAddress}
-          setCustomerAddress={setCustomerAddress}
-          appointmentDate={appointmentDate}
-          setAppointmentDate={setAppointmentDate}
-          appointmentTime={appointmentTime}
-          setAppointmentTime={setAppointmentTime}
-        />
-      )}
+      {renderPage()}
     </div>
   );
 }
