@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "care2_ui_repo.fullname" . }}
+  name: {{ include "care2-ui-repo.fullname" . }}
   labels:
-    {{- include "care2_ui_repo.labels" . | nindent 4 }}
+    {{- include "care2-ui-repo.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "care2_ui_repo.fullname" . }}
+    name: {{ include "care2-ui-repo.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
