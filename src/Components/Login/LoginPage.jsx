@@ -202,7 +202,7 @@ function LoginPage({
             </div>
           )}
         </div>
-        <div className="absolute flex items-center justify-center w-full pb-8 text-center bottom-2 -left-1">
+        <div className="absolute flex items-center justify-center w-full pb-8 text-center bottom-10 -left-1">
           <div className="w-full starting_button">
             <button
               className="w-4/5 starting_button bg-darkGray lg:w-1/4"
