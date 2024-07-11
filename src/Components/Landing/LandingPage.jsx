@@ -22,7 +22,7 @@ function LandingPage({ setCurrentPage }) {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-10 left-0 w-full pb-8 text-center">
+      <div className="absolute bottom-20 left-0 w-full pb-8 text-center">
         <div className="warning mb-1">
           <p className="text-black">
             *by clicking on “Get Started” you have agreed to our T&C which are
