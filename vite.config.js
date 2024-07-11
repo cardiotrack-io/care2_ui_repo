@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   //change port for production
   preview: {
-    port: 4000,
+    port: 4001,
   },
   // for dev
   server: {
