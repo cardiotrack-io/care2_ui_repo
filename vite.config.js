@@ -6,10 +6,10 @@ export default defineConfig({
   plugins: [react()],
   //change port for production
   preview: {
-    port: 5000,
+    port: 4000,
   },
   // for dev
   server: {
-    port: 5000,
+    port: 4000,
   },
 })
