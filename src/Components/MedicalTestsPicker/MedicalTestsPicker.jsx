@@ -24,19 +24,24 @@ const MedicalTestsPicker = ({
 }) => {
   // const [total, setTotal] = useState(selectedMedicalTestsPackageCost);
   useEffect(() => {
-    setTotal(selectedMedicalTestsPackageCost);
-  }, [selectedMedicalTestsPackageCost, setTotal]);
+    const packageCost = isNaN(Number(selectedMedicalTestsPackageCost)) ? 0 : Number(selectedMedicalTestsPackageCost);
+    setTotal(packageCost.toFixed(2));
+  }, [selectedMedicalTestsPackageCost]);
+  // useEffect(() => {
+  //   setTotal(Number(selectedMedicalTestsPackageCost.toFixed(2)));
+  // }, [selectedMedicalTestsPackageCost, setTotal]);
 
   const handleCheckboxChange = (e) => {
     const testName = e.target.value;
     const testPrice = allIndividualTests[testName] ? parseFloat(allIndividualTests[testName]) : 0;
-    console.log(selectedIndividualList);
+    console.log(allIndividualTests[testName]);
     if (testPrice > 0) {
       const updatedList = e.target.checked
         ? [...(selectedIndividualList || []), testName]
         : (selectedIndividualList || []).filter((item) => item !== testName);
       
       const updatedTotal = e.target.checked ? total + testPrice : total - testPrice;
+      const finalTotal = Number(updatedTotal.toFixed(2))
       
       const updatedCostList = { ...selectedIndividualListCost };
 
@@ -49,7 +54,8 @@ const MedicalTestsPicker = ({
       setSelectedIndividualList(updatedList);
       console.log(updatedCostList);
       setSelectedIndividualListCost(updatedCostList);
-      setTotal(updatedTotal);
+      console.log(updatedTotal)
+      setTotal(finalTotal);
     }
   };
 
