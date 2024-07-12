@@ -11,6 +11,7 @@ import CustomerDetailsForm from "./CustomerDetailsForm";
 import { format } from "date-fns";
 import axios from "axios";
 import backEndUrl from "../../Constants/backEndURL";
+import PaymentGatewayEndPoints from '../../Constants/PaymentGatewayEndPoints';
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 
 const Registration = ({
@@ -53,6 +54,7 @@ const Registration = ({
       setDiscount(0);
     }
     calculateTotal();
+    alert("Promo code is not valid");
   };
 
   const loadRazorpay = async () => {
@@ -60,7 +62,7 @@ const Registration = ({
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
 
     script.onload = async () => {
-      handlePayment();
+      generateOrder();
     };  
     script.onerror = () => {
       alert("Razorpay SDK failed to load. Are you online?");
@@ -68,28 +70,28 @@ const Registration = ({
     document.body.appendChild(script);
   };
 
-  const handlePayment = async () => {
+  const generateOrder = async () => {
     try {
       const requestData = {
-        amount: totalAfterDiscount, // Amount in paise
+        amount: Math.floor(total) * 100, // Amount in paise
         currency: "INR",
         receipt: "test-order",
       };
 
       const response = await axios.post(
-        `${backEndUrl}/care/payment/order`,
+        PaymentGatewayEndPoints.create_order,
         requestData,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Basic Y2xpZW50LXVpLWJhY2tlbmQ6NW9VOCxGXjo3LyNE",
+            Authorization: AuthorizationKey.key,
           },
         }
       );
-      console.log(response.data, response.data.id + "Response");
 
       if (response.data && response.data.id) {
         displayCheckout(response.data.amount, response.data.id);
+        console.log("Order Generated: "+response.data,response.data.id)
       } else {
         console.error("Invalid response from backend API", response.data);
       }
@@ -115,23 +117,33 @@ const Registration = ({
           payment_id: response.razorpay_payment_id,
           signature: response.razorpay_signature,
         };
-
+        console.log("Payment Success: ",data)
         try {
           const verificationResponse = await axios.post(
-            `https://api.razorpay.com/v1/orders`,
+            PaymentGatewayEndPoints.validate_order,
             data,
             {
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Basic Y2xpZW50LXVpLWJhY2tlbmQ6NW9VOCxGXjo3LyNE`,
+                Authorization: AuthorizationKey.key,
               },
             }
           );
-          if (verificationResponse.data.success) {
+          console.log("Payment Success: ",verificationResponse.data)
+          if (verificationResponse.data.status === 400) {
             alert("Payment is successful");
-          } else {
-            alert("Invalid signature, payment verification failed");
+            console.log("Verification Payment:"+verificationResponse.data)
           }
+          else {
+            alert("Payment is failed");
+          }
+          // if (verificationResponse.data.signature) {
+          //   alert("Payment is successful");
+          //   console.log("Verification Payment:"+verificationResponse.data)
+          // } else {
+          //   alert("Invalid signature, payment verification failed");
+          //   console.log("Error:"+verificationResponse.data)
+          // }
         } catch (error) {
           console.error(
             "Error verifying payment:",
@@ -165,6 +177,7 @@ const Registration = ({
     const currentTime = dayjs();
     const endOfDay = selectedDate.add(22, "hours"); // 10 PM
     let isValid = false;
+    console.log(selectedDate,currentTime,endOfDay)
 
     if (selectedDate.isSame(dayjs().startOf("day"))) {
       // Today: Allow times from current time to 10 PM
@@ -180,6 +193,7 @@ const Registration = ({
     }
 
     if (isValid) {
+      console.log(newValue)
       setAppointmentTime(newValue.format("HH:mm"));
       setTimeError(""); // Clear error if the time is valid
     } else {

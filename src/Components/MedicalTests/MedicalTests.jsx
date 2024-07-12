@@ -34,7 +34,7 @@ const MedicalTests = ({
   const [localTestSelect, setLocalTestSelect] = useState(null);
   const [individualTestList, setIndividualTestList] = useState(null);
   const [packageCost, setPackageCost] = useState(null);
-
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleMainPackageSelect = (packageName) => {
     const selectedPackage = allMedicalTests.find(ele => ele.Insurer_Package_Name === packageName);
@@ -52,6 +52,7 @@ const MedicalTests = ({
       setSelectedIndividualList(individualTestList);
       setSelectedIndividualListCost(individualTestListCost);
       setLocalTestSelect(packageName);
+      setErrorMessage(""); // Clear any existing error message
     }
   };
 
@@ -149,11 +150,20 @@ const MedicalTests = ({
           <DisplayTestList individualTestList={individualTestList} packageCost={packageCost} />
         </div>
       )}
+      {errorMessage && (
+        <div className="error_message text-red-500 text-xs mt-2">
+          <p>{errorMessage}</p>
+        </div>
+      )}
       <div className="relative mt-5 flex w-11/12 pb-4 text-center justify-center items-center space-x-2">
         <button
           className="w-full starting_button bg-darkGray lg:w-1/4"
           onClick={() => {
-            setCurrentPage("medicalTestsPicker");
+            if (individualTestList && individualTestList.length > 0) {
+              setCurrentPage("medicalTestsPicker");
+            } else {
+              setErrorMessage("Please select a package to proceed.");
+            }
           }}
         >
           <p className="font-light text-white">Proceed</p>

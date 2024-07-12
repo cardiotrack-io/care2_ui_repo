@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from "react";
 
 const statesWithDistricts = {
-  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool"],
+  "Andhra Pradesh": ["Guntur", "Kurnool", "Nellore", "Visakhapatnam", "Vijayawada"],
   "Arunachal Pradesh": ["Itanagar"],
   "Assam": ["Guwahati"],
   "Bihar": ["Patna"],
   "Chhattisgarh": ["Raipur"],
-  "Goa": ["Panaji", "Margao"],
-  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
-  "Haryana": ["Gurugram", "Faridabad"],
+  "Goa": [ "Margao", "Panaji"],
+  "Gujarat": ["Ahmedabad", "Bhavnagar", "Rajkot", "Surat", "Vadodara"],
+  "Haryana": ["Faridabad","Gurugram"],
   "Himachal Pradesh": ["Shimla"],
-  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad"],
-  "Karnataka": ["Bengaluru", "Mysore", "Mangalore", "Hubli", "Belgaum"],
-  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode"],
-  "Madhya Pradesh": ["Indore", "Bhopal", "Jabalpur", "Gwalior", "Ujjain"],
-  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik"],
+  "Jharkhand": ["Dhanbad","Jamshedpur","Ranchi"],
+  "Karnataka": ["Bengaluru","Belgaum", "Hubli", "Mangalore","Mysore" ],
+  "Kerala": ["Kochi", "Kozhikode","Thiruvananthapuram"],
+  "Madhya Pradesh": ["Bhopal", "Gwalior", "Indore","Jabalpur", "Ujjain"],
+  "Maharashtra": ["Nagpur","Nashik", "Mumbai", "Pune", "Thane"],
   "Manipur": ["Imphal"],
   "Meghalaya": ["Shillong"],
   "Mizoram": ["Aizawl"],
   "Nagaland": ["Kohima"],
   "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela"],
-  "Punjab": ["Chandigarh", "Ludhiana", "Amritsar", "Jalandhar"],
-  "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer"],
+  "Punjab": [ "Amritsar","Chandigarh", "Jalandhar","Ludhiana"],
+  "Rajasthan": ["Ajmer","Bikaner", "Jaipur", "Jodhpur", "Kota"],
   "Sikkim": ["Gangtok"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"],
-  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Khammam", "Karimnagar"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai","Salem", "Tiruchirappalli"],
+  "Telangana": ["Hyderabad","Khammam", "Karimnagar", "Nizamabad","Warangal"],
   "Tripura": ["Agartala"],
-  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi"],
+  "Uttar Pradesh": ["Agra","Ghaziabad","Kanpur","Lucknow", "Varanasi"],
   "Uttarakhand": ["Dehradun"],
-  "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri"],
+  "West Bengal": ["Asansol","Durgapur", "Howrah","Kolkata", "Siliguri"],
   "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
 };
 
@@ -45,20 +45,35 @@ const CustomerDetailsForm = ({
   const [district, setDistrict] = useState(customerAddress.district || "");
   const [pincode, setPincode] = useState(customerAddress.pincode || "");
   const [districts, setDistricts] = useState([]);
+  const [error, setError] = useState('');
 
   const handleNameChange = (e) => {
     setCustomerName(e.target.value);
   };
 
   const handleAddressChange = () => {
-    setCustomerAddress({
-      addressLine1,
-      addressLine2,
-      city,
-      district,
-      state,
-      pincode,
-    });
+    if (pincode.length !== 6) {
+      setError('Pincode must be exactly 6 digits long');
+      setPincode('');
+    } else {
+      setError('');
+      setCustomerAddress({
+        addressLine1,
+        addressLine2,
+        city,
+        district,
+        state,
+        pincode,
+      });
+    }
+  };
+
+  const validatePincode = (e) => {
+    const value = e.target.value;
+    if (value.length <= 6) {
+      setPincode(value);
+      setError('');
+    }
   };
 
   useEffect(() => {
@@ -88,38 +103,6 @@ const CustomerDetailsForm = ({
         />
       </div>
       <div className="address_container w-full flex flex-col space-y-4">
-        <div className="w-full">
-          <label
-            htmlFor="address_line_1"
-            className="block text-darkBlue text-xs text-left font-semibold mb-2"
-          >
-            Address Line - 1
-          </label>
-          <textarea
-            id="address_line_1"
-            placeholder="Enter your Address"
-            className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
-            value={addressLine1}
-            onChange={(e) => setAddressLine1(e.target.value)}
-            onBlur={handleAddressChange}
-          />
-        </div>
-        <div className="w-full">
-          <label
-            htmlFor="address_line_2"
-            className="block text-darkBlue text-xs text-left font-semibold mb-2"
-          >
-            Address Line - 2
-          </label>
-          <textarea
-            id="address_line_2"
-            placeholder="Enter your Address"
-            className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
-            value={addressLine2}
-            onChange={(e) => setAddressLine2(e.target.value)}
-            onBlur={handleAddressChange}
-          />
-        </div>
         <div className="w-full">
           <label
             htmlFor="state"
@@ -186,12 +169,45 @@ const CustomerDetailsForm = ({
             Pincode
           </label>
           <input
-            type="text"
+            type="number"
             id="pincode"
             placeholder="Enter your pincode"
             className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
-            value={pincode}
-            onChange={(e) => setPincode(e.target.value)}
+            value={pincode} maxLength="6"
+            onInput={validatePincode}
+            onBlur={handleAddressChange}
+          />
+          {error && <p className="text-red-500 text-xs italic">{error}</p>}
+        </div>
+        <div className="w-full">
+          <label
+            htmlFor="address_line_1"
+            className="block text-darkBlue text-xs text-left font-semibold mb-2"
+          >
+            Address Line - 1
+          </label>
+          <textarea
+            id="address_line_1"
+            placeholder="Enter your Address"
+            className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
+            value={addressLine1}
+            onChange={(e) => setAddressLine1(e.target.value)}
+            onBlur={handleAddressChange}
+          />
+        </div>
+        <div className="w-full">
+          <label
+            htmlFor="address_line_2"
+            className="block text-darkBlue text-xs text-left font-semibold mb-2"
+          >
+            Address Line - 2
+          </label>
+          <textarea
+            id="address_line_2"
+            placeholder="Enter your Address"
+            className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
+            value={addressLine2}
+            onChange={(e) => setAddressLine2(e.target.value)}
             onBlur={handleAddressChange}
           />
         </div>
