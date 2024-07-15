@@ -53,9 +53,9 @@ const ThankYouPage = ({
           <p className="text-md text-darkBlue mt-2">
             <strong>Total Amount:</strong> {total}
           </p>
-          <p className="text-md text-darkBlue mt-2">
+          {/* <p className="text-md text-darkBlue mt-2">
             <strong>Payment Status:</strong> {paymentStatus}
-          </p>
+          </p> */}
         </div>
         <div className="mt-6">
           <button
