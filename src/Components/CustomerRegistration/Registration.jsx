@@ -10,7 +10,6 @@ import dayjs from "dayjs";
 import CustomerDetailsForm from "./CustomerDetailsForm";
 import { format } from "date-fns";
 import axios from "axios";
-import backEndUrl from "../../Constants/backEndURL";
 import PaymentGatewayEndPoints from '../../Constants/PaymentGatewayEndPoints';
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 
@@ -26,7 +25,6 @@ const Registration = ({
   setCurrentPage,
   selectedIndividualList,
   total,
-  setTotal,
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -34,6 +32,8 @@ const Registration = ({
   const [discount, setDiscount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(total);
   const [timeError, setTimeError] = useState(""); // State for time error message
+  const [error, setError] = useState(""); // State for general error messages
+  const [isFormValid, setIsFormValid] = useState(false); // Track form validity
 
   const getFormattedTime = () => {
     return appointmentTime
@@ -52,12 +52,33 @@ const Registration = ({
       setDiscount(10); // Example discount for a specific promocode
     } else {
       setDiscount(0);
+      setError("Promo Code is Invalid");
     }
     calculateTotal();
-    alert("Promo code is not valid");
+  };
+
+  const validateInputs = () => {
+    if (!isFormValid) {
+      setError("Please enter valid information in all fields.");
+      return false;
+    }
+    if (!appointmentDate) {
+      setError("Please select an appointment date");
+      return false;
+    }
+    if (!appointmentTime) {
+      setError("Please select an appointment time");
+      return false;
+    }
+    setError(""); // Clear any previous errors
+    return true;
   };
 
   const loadRazorpay = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
 
@@ -131,19 +152,19 @@ const Registration = ({
           );
           console.log("Payment Success: ",verificationResponse.data)
           if (verificationResponse.data.status === 400) {
-            alert("Payment is successful");
+            // alert("Payment is successful");
             console.log("Verification Payment:"+verificationResponse.data)
-          }
-          else {
+            setCurrentPage('thankYou', {
+              customerName,
+              customerAddress,
+              appointmentDate,
+              appointmentTime,
+              total: totalAfterDiscount,
+              paymentStatus: "Paid"
+            });
+          } else {
             alert("Payment is failed");
           }
-          // if (verificationResponse.data.signature) {
-          //   alert("Payment is successful");
-          //   console.log("Verification Payment:"+verificationResponse.data)
-          // } else {
-          //   alert("Invalid signature, payment verification failed");
-          //   console.log("Error:"+verificationResponse.data)
-          // }
         } catch (error) {
           console.error(
             "Error verifying payment:",
@@ -174,26 +195,26 @@ const Registration = ({
 
   const handleTimeChange = (newValue) => {
     const selectedDate = dayjs(appointmentDate).startOf("day");
+    const selectedTime = selectedDate.hour(newValue.hour()).minute(newValue.minute());
     const currentTime = dayjs();
-    const endOfDay = selectedDate.add(22, "hours"); // 10 PM
+    const startOfDay = selectedDate.hour(8); // 8 AM
+    const endOfDay = selectedDate.hour(22); // 10 PM
+
     let isValid = false;
-    console.log(selectedDate,currentTime,endOfDay)
 
     if (selectedDate.isSame(dayjs().startOf("day"))) {
       // Today: Allow times from current time to 10 PM
-      if (newValue.isAfter(currentTime) && newValue.isBefore(endOfDay)) {
+      if (selectedTime.isAfter(currentTime) && selectedTime.isBefore(endOfDay)) {
         isValid = true;
       }
     } else {
       // Any other day: Allow times from 8 AM to 10 PM
-      const startOfDay = selectedDate.add(8, "hours"); // 8 AM
-      if (newValue.isAfter(startOfDay) && newValue.isBefore(endOfDay)) {
+      if (selectedTime.isAfter(startOfDay) && selectedTime.isBefore(endOfDay)) {
         isValid = true;
       }
     }
 
     if (isValid) {
-      console.log(newValue)
       setAppointmentTime(newValue.format("HH:mm"));
       setTimeError(""); // Clear error if the time is valid
     } else {
@@ -321,11 +342,7 @@ const Registration = ({
                 setCustomerName={setCustomerName}
                 customerAddress={customerAddress}
                 setCustomerAddress={setCustomerAddress}
-                appointmentDate={appointmentDate}
-                setAppointmentDate={setAppointmentDate}
-                appointmentTime={appointmentTime}
-                setAppointmentTime={setAppointmentTime}
-                setCurrentPage={setCurrentPage}
+                onValidationChange={setIsFormValid}
               />
             </div>
           </div>
@@ -381,6 +398,7 @@ const Registration = ({
             </p>
           </div>
         </div>
+        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
           <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"

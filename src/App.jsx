@@ -6,6 +6,7 @@ import MedicalTests from "./Components/MedicalTests/MedicalTests";
 import MedicalTestsPicker from "./Components/MedicalTestsPicker/MedicalTestsPicker";
 import Loading from "./Components/Utility/Loading";
 import Registration from "./Components/CustomerRegistration/Registration";
+import ThankYouPage from "./Components/CustomerRegistration/ThankYou";
 
 // Globally declaring size of OTP
 const OTP_SIZE = 6;
@@ -19,7 +20,7 @@ function App() {
   const [customerAddress, setCustomerAddress] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [customerPhone, setCustomerPhone] = useState(null);
-  const [employeeStatus, setEmployeeStatus] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState("");
 
   // Appointment Details
   const [appointmentDate, setAppointmentDate] = useState("");
@@ -115,6 +116,17 @@ function App() {
             setCurrentPage={setCurrentPage}
           />
         );
+        case "thankYou":
+        return (
+        <ThankYouPage
+        customerName={customerName}
+        customerAddress={customerAddress}
+        appointmentDate={appointmentDate}
+        appointmentTime={appointmentTime}
+        total={total}
+        paymentStatus={paymentStatus}
+      />
+      );
       default:
         return null;
     }

@@ -22,26 +22,22 @@ const MedicalTestsPicker = ({
   total,
   setTotal
 }) => {
-  // const [total, setTotal] = useState(selectedMedicalTestsPackageCost);
   useEffect(() => {
     const packageCost = isNaN(Number(selectedMedicalTestsPackageCost)) ? 0 : Number(selectedMedicalTestsPackageCost);
     setTotal(packageCost.toFixed(2));
   }, [selectedMedicalTestsPackageCost]);
-  // useEffect(() => {
-  //   setTotal(Number(selectedMedicalTestsPackageCost.toFixed(2)));
-  // }, [selectedMedicalTestsPackageCost, setTotal]);
 
   const handleCheckboxChange = (e) => {
     const testName = e.target.value;
     const testPrice = allIndividualTests[testName] ? parseFloat(allIndividualTests[testName]) : 0;
-    console.log(allIndividualTests[testName]);
+    console.log(allIndividualTests);
     if (testPrice > 0) {
       const updatedList = e.target.checked
         ? [...(selectedIndividualList || []), testName]
         : (selectedIndividualList || []).filter((item) => item !== testName);
       
       const updatedTotal = e.target.checked ? total + testPrice : total - testPrice;
-      const finalTotal = Number(updatedTotal.toFixed(2))
+      const finalTotal = Math.max(0, Number(updatedTotal.toFixed(2))); // Ensure total doesn't go negative
       
       const updatedCostList = { ...selectedIndividualListCost };
 
@@ -52,10 +48,14 @@ const MedicalTestsPicker = ({
       }
 
       setSelectedIndividualList(updatedList);
-      console.log(updatedCostList);
       setSelectedIndividualListCost(updatedCostList);
-      console.log(updatedTotal)
-      setTotal(finalTotal);
+      console.log(finalTotal)
+      if(updatedList.length==0) {
+        setTotal(0)
+      }
+      else {
+        setTotal(finalTotal);
+      }
     }
   };
 
@@ -122,16 +122,24 @@ const MedicalTestsPicker = ({
           </div>
         </div>
       )}
-      <div className="relative flex w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
-        <button
-          className="w-full starting_button bg-darkGray lg:w-1/4"
-          onClick={() => {
-            setCurrentPage("registration")
-          }}
-        >
-          <p className="font-light text-white">Proceed</p>
-        </button>
-      </div>
+       <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
+          {/* <button
+            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
+            onClick={() => {
+              //Add new Test
+            }}
+          >
+            <p className="font-light text-white text-center">Add Test</p>
+          </button> */}
+          <button
+            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
+            onClick={() => {
+              setCurrentPage("registration")
+            }}
+          >
+            <p className="font-light text-white text-center">Proceed</p>
+          </button>
+        </div>
     </div>
   );
 };

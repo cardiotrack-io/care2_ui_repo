@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 
 const statesWithDistricts = {
   "Andhra Pradesh": ["Guntur", "Kurnool", "Nellore", "Visakhapatnam", "Vijayawada"],
@@ -6,29 +6,29 @@ const statesWithDistricts = {
   "Assam": ["Guwahati"],
   "Bihar": ["Patna"],
   "Chhattisgarh": ["Raipur"],
-  "Goa": [ "Margao", "Panaji"],
+  "Goa": ["Margao", "Panaji"],
   "Gujarat": ["Ahmedabad", "Bhavnagar", "Rajkot", "Surat", "Vadodara"],
-  "Haryana": ["Faridabad","Gurugram"],
+  "Haryana": ["Faridabad", "Gurugram"],
   "Himachal Pradesh": ["Shimla"],
-  "Jharkhand": ["Dhanbad","Jamshedpur","Ranchi"],
-  "Karnataka": ["Bengaluru","Belgaum", "Hubli", "Mangalore","Mysore" ],
-  "Kerala": ["Kochi", "Kozhikode","Thiruvananthapuram"],
-  "Madhya Pradesh": ["Bhopal", "Gwalior", "Indore","Jabalpur", "Ujjain"],
-  "Maharashtra": ["Nagpur","Nashik", "Mumbai", "Pune", "Thane"],
+  "Jharkhand": ["Dhanbad", "Jamshedpur", "Ranchi"],
+  "Karnataka": ["Bengaluru", "Belgaum", "Hubli", "Mangalore", "Mysore"],
+  "Kerala": ["Kochi", "Kozhikode", "Thiruvananthapuram"],
+  "Madhya Pradesh": ["Bhopal", "Gwalior", "Indore", "Jabalpur", "Ujjain"],
+  "Maharashtra": ["Nagpur", "Nashik", "Mumbai", "Pune", "Thane"],
   "Manipur": ["Imphal"],
   "Meghalaya": ["Shillong"],
   "Mizoram": ["Aizawl"],
   "Nagaland": ["Kohima"],
   "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela"],
-  "Punjab": [ "Amritsar","Chandigarh", "Jalandhar","Ludhiana"],
-  "Rajasthan": ["Ajmer","Bikaner", "Jaipur", "Jodhpur", "Kota"],
+  "Punjab": ["Amritsar", "Chandigarh", "Jalandhar", "Ludhiana"],
+  "Rajasthan": ["Ajmer", "Bikaner", "Jaipur", "Jodhpur", "Kota"],
   "Sikkim": ["Gangtok"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai","Salem", "Tiruchirappalli"],
-  "Telangana": ["Hyderabad","Khammam", "Karimnagar", "Nizamabad","Warangal"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Salem", "Tiruchirappalli"],
+  "Telangana": ["Hyderabad", "Khammam", "Karimnagar", "Nizamabad", "Warangal"],
   "Tripura": ["Agartala"],
-  "Uttar Pradesh": ["Agra","Ghaziabad","Kanpur","Lucknow", "Varanasi"],
+  "Uttar Pradesh": ["Agra", "Ghaziabad", "Kanpur", "Lucknow", "Varanasi"],
   "Uttarakhand": ["Dehradun"],
-  "West Bengal": ["Asansol","Durgapur", "Howrah","Kolkata", "Siliguri"],
+  "West Bengal": ["Asansol", "Durgapur", "Howrah", "Kolkata", "Siliguri"],
   "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
 };
 
@@ -37,6 +37,7 @@ const CustomerDetailsForm = ({
   setCustomerName,
   customerAddress,
   setCustomerAddress,
+  onValidationChange,
 }) => {
   const [addressLine1, setAddressLine1] = useState(customerAddress.addressLine1 || "");
   const [addressLine2, setAddressLine2] = useState(customerAddress.addressLine2 || "");
@@ -47,25 +48,47 @@ const CustomerDetailsForm = ({
   const [districts, setDistricts] = useState([]);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (state) {
+      setDistricts(statesWithDistricts[state] || []);
+    } else {
+      setDistricts([]);
+    }
+  }, [state]);
+
+  useEffect(() => {
+    validateForm();
+  }, [customerName, addressLine1, city, state, district, pincode]);
+
+  const validateForm = () => {
+    if (!customerName || !addressLine1 || !city || !state || !district || !pincode) {
+      setError('All fields are required');
+      onValidationChange(false);
+      return false;
+    }
+    if (pincode.length !== 6) {
+      setError('Pincode must be exactly 6 digits long');
+      onValidationChange(false);
+      return false;
+    }
+    setError('');
+    onValidationChange(true);
+    return true;
+  };
+
   const handleNameChange = (e) => {
     setCustomerName(e.target.value);
   };
 
   const handleAddressChange = () => {
-    if (pincode.length !== 6) {
-      setError('Pincode must be exactly 6 digits long');
-      setPincode('');
-    } else {
-      setError('');
-      setCustomerAddress({
-        addressLine1,
-        addressLine2,
-        city,
-        district,
-        state,
-        pincode,
-      });
-    }
+    setCustomerAddress({
+      addressLine1,
+      addressLine2,
+      city,
+      district,
+      state,
+      pincode,
+    });
   };
 
   const validatePincode = (e) => {
@@ -75,14 +98,6 @@ const CustomerDetailsForm = ({
       setError('');
     }
   };
-
-  useEffect(() => {
-    if (state) {
-      setDistricts(statesWithDistricts[state] || []);
-    } else {
-      setDistricts([]);
-    }
-  }, [state]);
 
   return (
     <div className="form_container flex flex-col items-start py-4 px-2 rounded-md bg-darkBlue bg-opacity-20 space-y-4">
@@ -99,7 +114,7 @@ const CustomerDetailsForm = ({
           placeholder="Enter your name"
           className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
           value={customerName}
-          onChange={handleNameChange}
+          onChange={handleNameChange} required
         />
       </div>
       <div className="address_container w-full flex flex-col space-y-4">
@@ -115,7 +130,7 @@ const CustomerDetailsForm = ({
             className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
             value={state}
             onChange={(e) => setState(e.target.value)}
-            onBlur={handleAddressChange}
+            onBlur={handleAddressChange} required
           >
             <option value="">Select State</option>
             {Object.keys(statesWithDistricts).map((state) => (
@@ -136,7 +151,7 @@ const CustomerDetailsForm = ({
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
             onBlur={handleAddressChange}
-            disabled={!state}
+            disabled={!state} required
           >
             <option value="">Select District</option>
             {districts.map((district) => (
@@ -158,7 +173,7 @@ const CustomerDetailsForm = ({
             className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            onBlur={handleAddressChange}
+            onBlur={handleAddressChange} required
           />
         </div>
         <div className="w-full">
@@ -175,9 +190,8 @@ const CustomerDetailsForm = ({
             className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
             value={pincode} maxLength="6"
             onInput={validatePincode}
-            onBlur={handleAddressChange}
+            onBlur={handleAddressChange} required
           />
-          {error && <p className="text-red-500 text-xs italic">{error}</p>}
         </div>
         <div className="w-full">
           <label
@@ -192,8 +206,9 @@ const CustomerDetailsForm = ({
             className="w-full border-darkBlue border-b-2 text-darkBlue bg-slate-50 bg-opacity-70 rounded-sm p-2"
             value={addressLine1}
             onChange={(e) => setAddressLine1(e.target.value)}
-            onBlur={handleAddressChange}
+            onBlur={handleAddressChange} 
           />
+           {error && <p className="text-red-500 text-xs italic">{error}</p>}
         </div>
         <div className="w-full">
           <label

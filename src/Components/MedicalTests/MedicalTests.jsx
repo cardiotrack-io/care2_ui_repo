@@ -123,7 +123,7 @@ const MedicalTests = ({
           </div>
         </div>
         <div className="flex justify-center py-3">
-          <p className="text-darkBlue text-sm font-semibold">Select your Health Package</p>
+          <p className="text-darkBlue text-sm font-semibold">Select your Health Test</p>
         </div>
       </div>
       {allMedicalTests && (
