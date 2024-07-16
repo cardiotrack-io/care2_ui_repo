@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import qs from "qs";
 import UserApiEndPoints from "../../Constants/UserEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
-import { data } from "autoprefixer";
 
 function LoginPage({
   customerPhone,
@@ -24,6 +23,7 @@ function LoginPage({
   const [errorState, setErrorState] = useState(errorInit);
   const [phoneStatus, setPhoneStatus] = useState(false);
   const [OTPStatus, setOTPStatus] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const sendOTP = async (phone) => {
     let data = qs.stringify({
@@ -142,25 +142,51 @@ function LoginPage({
     return () => clearTimeout(timer);
   }, [errorState]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setKeyboardVisible(window.innerHeight < window.outerHeight - 100);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const handleButtonClick = () => {
+    if (!phoneStatus) {
+      let validity = checkIfValidPhone(customerPhone);
+      setErrorState(validity);
+      if (!validity.error_status) {
+        setLoading(true);
+        sendOTP(customerPhone);
+      }
+    } else if (phoneStatus && !OTPStatus) {
+      let joinedOTP = otp.join("");
+      setLoading(false);
+      getOtpValidationStatus(joinedOTP, customerPhone);
+    }
+  };
+
   return (
-    <div className="relative flex flex-col w-full h-screen px-6 ">
+    <div className="relative flex flex-col w-full h-screen px-6">
       <div className="container mt-11">
         <div className="flex flex-col -space-y-4 slide-in-left mt-5">
           <div className="cardiotrack slide-in-left">
-            <p className="font-bold text-black ">Cardiotrack</p>
+            <p className="font-bold text-black">Cardiotrack</p>
           </div>
           <div className="flex justify-center space-x-1 care-medical-test">
-            <div className="care ">
+            <div className="care">
               <p className="tracking-tighter text-black">Care</p>
             </div>
-            <div className="flex items-center justify-center medical-test ">
+            <div className="flex items-center justify-center medical-test">
               <p className="px-4 tracking-tighter rounded-lg text-navyBlue bg-paleBlue">
                 Medical Home Visit
               </p>
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center ">
+        <div className="flex flex-col items-center justify-center">
           <div className="flex flex-col items-start justify-start mt-8 -space-y-1 welcome_message">
             <div className="welcome_text">
               <p className="font-bold tracking-tighter text-black">Welcome!</p>
@@ -178,7 +204,7 @@ function LoginPage({
           <div className="error_container transition-all">
             {errorState.error_status && (
               <div className="error transition-opacity mx-3">
-                <p className=" text-red-500 text-xs text-left">
+                <p className="text-red-500 text-xs text-left">
                   {errorState.error_reason}
                 </p>
               </div>
@@ -207,26 +233,15 @@ function LoginPage({
             </div>
           )}
         </div>
-        <div className="absolute flex items-center justify-center w-full pb-8 text-center bottom-10 -left-1">
+        <div
+          className={`absolute flex items-center justify-center w-full pb-8 text-center bottom-10 ${
+            keyboardVisible ? "keyboard-visible" : ""
+          }`}
+        >
           <div className="w-full starting_button">
             <button
               className="w-4/5 starting_button bg-darkGray lg:w-1/4"
-              onClick={() => {
-                if (!phoneStatus) {
-                  let validity = checkIfValidPhone(customerPhone);
-                  console.log(validity);
-                  setErrorState(validity);
-                  if (!validity.error_status) {
-                    setLoading(true);
-                    sendOTP(customerPhone);
-                  }
-                } else if (phoneStatus && !OTPStatus) {
-                  console.log(OTPStatus+"OTP Status")
-                  let joinedOTP = otp.join("");
-                  setLoading(false);
-                  getOtpValidationStatus(joinedOTP, customerPhone);
-                }
-              }}
+              onClick={handleButtonClick}
             >
               <p className="font-light text-white">
                 {!phoneStatus ? <>Get OTP</> : <>Verify OTP</>}

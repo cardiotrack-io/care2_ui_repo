@@ -27,10 +27,12 @@ const MedicalTestsPicker = ({
     setTotal(packageCost.toFixed(2));
   }, [selectedMedicalTestsPackageCost]);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleCheckboxChange = (e) => {
     const testName = e.target.value;
     const testPrice = allIndividualTests[testName] ? parseFloat(allIndividualTests[testName]) : 0;
-    console.log(allIndividualTests);
+
     if (testPrice > 0) {
       const updatedList = e.target.checked
         ? [...(selectedIndividualList || []), testName]
@@ -49,11 +51,9 @@ const MedicalTestsPicker = ({
 
       setSelectedIndividualList(updatedList);
       setSelectedIndividualListCost(updatedCostList);
-      console.log(finalTotal)
-      if(updatedList.length==0) {
-        setTotal(0)
-      }
-      else {
+      if(updatedList.length === 0) {
+        setTotal(0);
+      } else {
         setTotal(finalTotal);
       }
     }
@@ -78,6 +78,14 @@ const MedicalTestsPicker = ({
         <div className="border-b border-1 border-mediumBlue w-5/5 mx-auto"></div>
       </div>
     ));
+
+  const handleProceed = () => {
+    if (selectedIndividualList && selectedIndividualList.length > 0) {
+      setCurrentPage("registration");
+    } else {
+      setErrorMessage("Please select at least one test to proceed.");
+    }
+  };
 
   return (
     <div className="relative flex flex-col overflow-auto w-full px-6 items-center">
@@ -122,20 +130,15 @@ const MedicalTestsPicker = ({
           </div>
         </div>
       )}
+      {errorMessage && (
+        <div className="error_message text-red-500 text-xs mt-2">
+          <p>{errorMessage}</p>
+        </div>
+      )}
        <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
-          {/* <button
-            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
-            onClick={() => {
-              //Add new Test
-            }}
-          >
-            <p className="font-light text-white text-center">Add Test</p>
-          </button> */}
           <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
-            onClick={() => {
-              setCurrentPage("registration")
-            }}
+            onClick={handleProceed}
           >
             <p className="font-light text-white text-center">Proceed</p>
           </button>
