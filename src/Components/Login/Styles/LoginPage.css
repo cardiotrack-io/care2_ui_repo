@@ -4,15 +4,3 @@
 .instruction_text   {
     font-size: 15px;
 }
-
-.starting_button {
-    position: fixed;
-    bottom: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .starting_button.keyboard-visible {
-    bottom: 80px; /* Adjust this value as needed */
-  }
