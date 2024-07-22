@@ -71,7 +71,7 @@ const MedicalTestsPicker = ({
               name="individual_tests_cb"
               value={test.display_value}
               defaultChecked
-              onChange={handleCheckboxChange}
+              onChange={handleCheckboxChange} disabled
             />
           </div>
         </div>

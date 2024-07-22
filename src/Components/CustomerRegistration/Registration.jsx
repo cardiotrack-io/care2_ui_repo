@@ -23,8 +23,12 @@ const Registration = ({
   appointmentTime,
   setAppointmentTime,
   setCurrentPage,
+  customerPhone,
   selectedIndividualList,
   total,
+  selectedPackageName,
+  paymentStatus,
+  setPaymentStatus
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -34,6 +38,7 @@ const Registration = ({
   const [timeError, setTimeError] = useState(""); // State for time error message
   const [error, setError] = useState(""); // State for general error messages
   const [isFormValid, setIsFormValid] = useState(false); // Track form validity
+
 
   const getFormattedTime = () => {
     return appointmentTime
@@ -139,38 +144,9 @@ const Registration = ({
           signature: response.razorpay_signature,
         };
         console.log("Payment Success: ",data)
-        try {
-          const verificationResponse = await axios.post(
-            PaymentGatewayEndPoints.validate_order,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: AuthorizationKey.key,
-              },
-            }
-          );
-          console.log("Payment Success: ",verificationResponse.data)
-          if (verificationResponse.data.status === 400) {
-            // alert("Payment is successful");
-            console.log("Verification Payment:"+verificationResponse.data)
-            setCurrentPage('thankYou', {
-              customerName,
-              customerAddress,
-              appointmentDate,
-              appointmentTime,
-              total: totalAfterDiscount,
-              paymentStatus: "Paid"
-            });
-          } else {
-            alert("Payment is failed");
-          }
-        } catch (error) {
-          console.error(
-            "Error verifying payment:",
-            error.response ? error.response.data : error.message
-          );
-        }
+        console.log(amount)
+        //savePaymentInfo(data.order_id, data.payment_id, data.signature, appointmentDate, amount)
+        sendOrderToServer_Validated(data,amount)
       },
       modal: {
         ondismiss: function () {
@@ -178,12 +154,12 @@ const Registration = ({
         },
       },
       prefill: {
-        name: `${customerName.firstName} ${customerName.lastName}`,
+        name: `${customerName}`,
         email: "example@example.com",
         contact: "9999999999",
       },
       notes: {
-        address: `${customerAddress.addressLine1} ${customerAddress.addressLine2}`,
+        address: `${customerAddress.addressLine1}`,
       },
       theme: {
         color: "#61dafb",
@@ -192,6 +168,95 @@ const Registration = ({
     let paymentObject = new window.Razorpay(options);
     paymentObject.open();
   };
+
+  async function sendOrderToServer_Validated(paymentData) {
+    const originalDate = new Date(appointmentDate);
+    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+
+    const formattedDate = originalDate.toLocaleDateString('en-GB', options)
+      .split(' ')
+      .map((part, index) => index === 1 ? part.replace('.', '') : part) // Remove period from month abbreviation
+      .join('-');
+    const formattedTime = dayjs(appointmentTime, "HH:mm").format("HH:mm");
+    console.log(formattedTime)
+    console.log(formattedDate)
+    console.log(selectedPackageName)
+    const data = {
+      order: {
+        Appointment_Date: formattedDate,
+        Appointment_Time: appointmentTime,
+        Contact_Number1: customerPhone,
+        Customer_Address: {
+          address_line_1: customerAddress.addressLine1,
+          // address_line_2: customerAddress.addressLine2 || "",
+        },
+        Customer_City: customerAddress.city,
+        Customer_PIN_Code: customerAddress.pincode,
+        Customer_Statee: customerAddress.state,
+        Customer_Name: customerName,
+        Gender: customerAddress.gender[0].toUpperCase(),
+        Life_Assured_Email: customerAddress.email,
+        Package_Name: selectedPackageName,
+      },
+      payment: {
+        Payment_Order_ID: paymentData.order_id,
+        Payment_ID: paymentData.payment_id,
+        Payment_Signature: paymentData.signature,
+        Amount: total.toString(),
+      },
+    };
+    console.log('Order ID:', paymentData.order_id);
+console.log('Payment ID:', paymentData.payment_id);
+console.log('Generated Signature:', paymentData.signature);
+
+    console.log('Request Data:', data);
+    
+    try {
+      const response = await axios.post(
+        PaymentGatewayEndPoints.validate_order,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: AuthorizationKey.key,
+          },
+        }
+      );
+    
+      if (response.status === 200) {
+        console.log('Response Data:', response);
+        setPaymentStatus("Paid")
+        navigateToThankyouPage();
+      }
+    } catch (error) {
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+      } else if (error.request) {
+        // No response was received
+        console.error('Error request:', error.request);
+      } else {
+        // Error setting up the request
+        console.error('Error message:', error.message);
+      }
+      console.error('Error config:', error.config);
+    }
+  }
+
+ function navigateToThankyouPage() {
+  setCurrentPage('thankYou', {
+    customerName,
+    customerAddress,
+    appointmentDate,
+    appointmentTime,
+    total: totalAfterDiscount,
+    paymentStatus:paymentStatus,
+    selectedIndividualList
+  });
+  }
+    
 
   const handleTimeChange = (newValue) => {
     const selectedDate = dayjs(appointmentDate).startOf("day");
@@ -404,6 +469,8 @@ const Registration = ({
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
             onClick={() => {
               // Mark as COD
+              setPaymentStatus("COD");
+              navigateToThankyouPage();
             }}
           >
             <p className="font-light text-white text-center">Pay Later</p>

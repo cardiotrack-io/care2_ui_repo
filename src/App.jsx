@@ -34,6 +34,7 @@ function App() {
   const [selectedIndividualListCost, setSelectedIndividualListCost] = useState(null);
   const [selectedMedicalTests, setSelectedMedicalTests] = useState(null);
   const [selectedMedicalTestsPackageCost, setSelectedMedicalTestsPackageCost] = useState(null);
+  const [selectedPackageName, setSelectedPackageName] = useState('');
 
   const [otp, setOtp] = useState(new Array(OTP_SIZE).fill(""));
   const [loading, setLoading] = useState(false);
@@ -77,6 +78,8 @@ function App() {
             setLoading={setLoading}
             loading={loading}
             setCurrentPage={setCurrentPage}
+            selectedPackageName = {selectedPackageName}
+            setSelectedPackageName = {setSelectedPackageName}
           />
         );
       case "medicalTestsPicker":
@@ -107,6 +110,7 @@ function App() {
             setTotal={setTotal}
             customerName={customerName}
             setCustomerName={setCustomerName}
+            customerPhone={customerPhone}
             customerAddress={customerAddress}
             setCustomerAddress={setCustomerAddress}
             appointmentDate={appointmentDate}
@@ -114,6 +118,9 @@ function App() {
             appointmentTime={appointmentTime}
             setAppointmentTime={setAppointmentTime}
             setCurrentPage={setCurrentPage}
+            selectedPackageName = {selectedPackageName}
+            paymentStatus={paymentStatus}
+            setPaymentStatus={setPaymentStatus}
           />
         );
         case "thankYou":
@@ -124,7 +131,11 @@ function App() {
         appointmentDate={appointmentDate}
         appointmentTime={appointmentTime}
         total={total}
+        selectedIndividualList={selectedIndividualList}
+        // selectedIndividualListCost={selectedIndividualListCost}
+        // setSelectedIndividualListCost={setSelectedIndividualListCost}
         paymentStatus={paymentStatus}
+        setPaymentStatus={setPaymentStatus}
       />
       );
       default:

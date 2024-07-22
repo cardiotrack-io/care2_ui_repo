@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import TestPlus from "../../assets/test_plus.svg";
 import FullBody from "../../assets/MedicalPackages/CRA.svg";
 import Heart from "../../assets/MedicalPackages/Heart.svg";
@@ -7,7 +8,6 @@ import StandingMedicalLady from "../../assets/MedicalLadyStanding.svg";
 import axios from "axios";
 import MedicalTestApiEndPoints from "../../Constants/MedicalTestEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
-import { useEffect, useState } from "react";
 import DisplayTestList from "./TestList";
 
 const MedicalPackageIcons = [Lungs, Ovary, Heart, FullBody];
@@ -30,6 +30,8 @@ const MedicalTests = ({
   selectedIndividualListCost,
   setSelectedIndividualListCost,
   setCurrentPage,
+  selectedPackageName,
+  setSelectedPackageName
 }) => {
   const [localTestSelect, setLocalTestSelect] = useState(null);
   const [individualTestList, setIndividualTestList] = useState(null);
@@ -40,7 +42,10 @@ const MedicalTests = ({
     const selectedPackage = allMedicalTests.find(ele => ele.Insurer_Package_Name === packageName);
     if (selectedPackage) {
       setIndividualTestList(selectedPackage.Package_Details);
-      console.log(selectedPackage) // all package details
+      console.log(selectedPackage); // all package details
+      setSelectedPackageName(selectedPackage.Cardiotrack_Package_Name);
+      console.log(selectedPackage.Cardiotrack_Package_Name);
+      console.log(selectedPackageName);
       setPackageCost(selectedPackage.Core_Package_Rate_Negotiated);
       setSelectedMedicalTests(packageName);
       setSelectedMedicalTestIndividualList(selectedPackage.Package_Details);
@@ -48,10 +53,11 @@ const MedicalTests = ({
 
       const individualTestList = selectedPackage.Package_Details.map(element => element.display_value);
       const individualTestListCost = Object.fromEntries(individualTestList.map(name => [name, allIndividualTests[name]]));
-      console.log(individualTestListCost)
+      console.log(individualTestListCost);
       setSelectedIndividualList(individualTestList);
       setSelectedIndividualListCost(individualTestListCost);
       setLocalTestSelect(packageName);
+      console.log(setLocalTestSelect);
       setErrorMessage(""); // Clear any existing error message
     }
   };

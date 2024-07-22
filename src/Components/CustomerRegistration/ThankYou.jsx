@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import TestPlus from "../../assets/test_plus.svg";
-import dayjs from 'dayjs';
-import { format } from 'date-fns';
+import dayjs from "dayjs";
+import { format } from "date-fns";
 
 const ThankYouPage = ({
   customerName,
@@ -9,7 +9,8 @@ const ThankYouPage = ({
   appointmentDate,
   appointmentTime,
   total,
-  paymentStatus
+  selectedIndividualList,
+  paymentStatus,
 }) => {
   return (
     <div className="container mt-11 px-6">
@@ -35,35 +36,61 @@ const ThankYouPage = ({
       </div>
       <div className="mt-6 text-center">
         <h2 className="text-2xl font-bold text-darkBlue">Thank You!</h2>
-        <p className="text-md text-darkBlue mt-2">Your appointment is confirmed.</p>
+        <p className="text-md text-darkBlue mt-2">
+          Your appointment is confirmed.
+        </p>
         <div className="mt-6">
-          <h3 className="text-xl font-semibold text-darkBlue">Appointment Details</h3>
+          <h3 className="text-xl font-semibold text-darkBlue">
+            Appointment Details
+          </h3>
           <p className="text-md text-darkBlue mt-2">
             <strong>Name:</strong> {customerName}
           </p>
           <p className="text-md text-darkBlue mt-2">
-            <strong>Address:</strong> {customerAddress.addressLine1}, {customerAddress.addressLine2}, {customerAddress.city}, {customerAddress.state}, {customerAddress.pincode}
+            <strong>Address:</strong> {customerAddress.addressLine1},{" "}
+            {customerAddress.city}, {customerAddress.state},{" "}
+            {customerAddress.pincode}
+          </p>
+          {/* {customerAddress.addressLine2}, */}
+          <p className="text-md text-darkBlue mt-2">
+            <strong>Date:</strong>{" "}
+            {appointmentDate ? format(appointmentDate, "dd-MM-yy") : ""}
           </p>
           <p className="text-md text-darkBlue mt-2">
-            <strong>Date:</strong> {appointmentDate ? format(appointmentDate, "dd-MM-yy") : ""}
-          </p>
-          <p className="text-md text-darkBlue mt-2">
-            <strong>Time:</strong> {appointmentTime ? dayjs(appointmentTime, "HH:mm").format("hh:mm A") : ""}
+            <strong>Time:</strong>{" "}
+            {appointmentTime
+              ? dayjs(appointmentTime, "HH:mm").format("hh:mm A")
+              : ""}
           </p>
           <p className="text-md text-darkBlue mt-2">
             <strong>Total Amount:</strong> {total}
           </p>
-          {/* <p className="text-md text-darkBlue mt-2">
+          <p className="text-md text-darkBlue mt-2">
             <strong>Payment Status:</strong> {paymentStatus}
-          </p> */}
+          </p>
         </div>
-        <div className="mt-6">
+        {/* <div className="mt-6">
           <button
             className="px-4 py-2 bg-darkGray text-white rounded-lg"
             onClick={() => window.location.href = '/'} // Redirect to homepage or any other page
           >
             Go to Homepage
           </button>
+        </div> */}
+        <div className="container mt-5">
+          <div className="flex justify-center text-2xl">
+            <p className="text-darkBlue text-md font-bold">Your Tests</p>
+          </div>
+          <div className="flex flex-col md:flex-row md:flex-wrap py-4 px-2 rounded-md bg-blue-400 bg-opacity-20 space-y-2 md:space-y-0">
+            {selectedIndividualList.map((test, index) => (
+              <div
+                key={index}
+                className="w-full md:w-1/2 text-sm font-semibold text-darkBlue md:py-2"
+              >
+                {test}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
