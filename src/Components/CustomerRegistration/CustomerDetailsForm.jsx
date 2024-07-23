@@ -66,14 +66,14 @@ const CustomerDetailsForm = ({
   const [addressLine1, setAddressLine1] = useState(
     customerAddress.addressLine1 || ""
   );
-  const [addressLine2, setAddressLine2] = useState(
-    customerAddress.addressLine2 || ""
-  );
-  const [city, setCity] = useState(customerAddress.city || "");
+  // const [addressLine2, setAddressLine2] = useState(
+  //   customerAddress.addressLine2 || ""
+  // );
+  // const [city, setCity] = useState(customerAddress.city || "");
   const [state, setState] = useState(customerAddress.state || "");
   const [district, setDistrict] = useState(customerAddress.district || "");
   const [pincode, setPincode] = useState(customerAddress.pincode || "");
-  const [email, setEmail] = useState(customerAddress.email || "");
+  // const [email, setEmail] = useState(customerAddress.email || "");
   const [alternateNumber, setAlternateNumber] = useState(
     customerAddress.alternateNumber || ""
   );
@@ -95,11 +95,11 @@ const CustomerDetailsForm = ({
     customerName,
     gender,
     addressLine1,
-    city,
+    // city,
     state,
     district,
     pincode,
-    email,
+    // email,
     alternateNumber
   ]);
 
@@ -108,7 +108,7 @@ const CustomerDetailsForm = ({
       !customerName ||
       !gender ||
       !addressLine1 ||
-      !city ||
+      // !city ||
       !state ||
       !district ||
       !pincode
@@ -146,14 +146,14 @@ const CustomerDetailsForm = ({
   const handleAddressChange = () => {
     setCustomerAddress({
       addressLine1,
-      addressLine2,
-      city,
+      // addressLine2,
+      // city,
       district,
       state,
       pincode,
       gender,
-      email,
-      alternateNumber,
+      // email,
+      // alternateNumber,
     });
   };
 
@@ -205,7 +205,7 @@ const CustomerDetailsForm = ({
           <option value="other">Other</option>
         </select>
       </div>
-      <div className="w-full">
+      {/* <div className="w-full">
         <label
           htmlFor="email"
           className="block text-darkBlue text-xs text-left font-semibold mb-2"
@@ -222,7 +222,7 @@ const CustomerDetailsForm = ({
           onBlur={handleAddressChange}
           required
         />
-      </div>
+      </div> */}
       {/* <div className="w-full">
         <label
           htmlFor="alternate_number"
@@ -270,7 +270,7 @@ const CustomerDetailsForm = ({
             htmlFor="district"
             className="block text-darkBlue text-xs text-left font-semibold mb-2"
           >
-            District
+            City
           </label>
           <select
             id="district"
@@ -281,7 +281,7 @@ const CustomerDetailsForm = ({
             disabled={!state}
             required
           >
-            <option value="">Select District</option>
+            <option value="">Select City</option>
             {districts.map((district) => (
               <option key={district} value={district}>
                 {district}
@@ -289,7 +289,7 @@ const CustomerDetailsForm = ({
             ))}
           </select>
         </div>
-        <div className="w-full">
+        {/* <div className="w-full">
           <label
             htmlFor="city"
             className="block text-darkBlue text-xs text-left font-semibold mb-2"
@@ -306,7 +306,7 @@ const CustomerDetailsForm = ({
             onBlur={handleAddressChange}
             required
           />
-        </div>
+        </div> */}
         <div className="w-full">
           <label
             htmlFor="pincode"
@@ -331,7 +331,7 @@ const CustomerDetailsForm = ({
             htmlFor="address_line_1"
             className="block text-darkBlue text-xs text-left font-semibold mb-2"
           >
-            Address Line - 1
+            Address
           </label>
           <textarea
             id="address_line_1"
@@ -343,7 +343,7 @@ const CustomerDetailsForm = ({
           />
           {error && <p className="text-red-500 text-xs italic">{error}</p>}
         </div>
-        <div className="w-full">
+        {/* <div className="w-full">
           <label
             htmlFor="address_line_2"
             className="block text-darkBlue text-xs text-left font-semibold mb-2"
@@ -358,7 +358,7 @@ const CustomerDetailsForm = ({
             onChange={(e) => setAddressLine2(e.target.value)}
             onBlur={handleAddressChange}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

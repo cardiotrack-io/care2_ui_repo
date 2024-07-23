@@ -59,25 +59,41 @@ const MedicalTestsPicker = ({
     }
   };
 
+  // const renderItems = () =>
+  //   selectedMedicalTestIndividualList.map((test, index) => (
+  //     <div className="py-2" key={index}>
+  //       <div className="flex flex-row justify-between h-10 md:h-6 px-2">
+  //         <div className="text-left text-darkBlue text-sm">{test.display_value}</div>
+  //         <div className="px-10">
+  //           <input
+  //             className="rounded-checkbox"
+  //             type="checkbox"
+  //             name="individual_tests_cb"
+  //             value={test.display_value}
+  //             defaultChecked
+  //             onChange={handleCheckboxChange}
+  //           />
+  //         </div>
+  //       </div>
+  //       <div className="border-b border-1 border-mediumBlue w-5/5 mx-auto"></div>
+  //     </div>
+  //   ));
+
   const renderItems = () =>
-    selectedMedicalTestIndividualList.map((test, index) => (
-      <div className="py-2" key={index}>
-        <div className="flex flex-row justify-between h-10 md:h-6 px-2">
-          <div className="text-left text-darkBlue text-sm">{test.display_value}</div>
-          <div className="px-10">
-            <input
-              className="rounded-checkbox"
-              type="checkbox"
-              name="individual_tests_cb"
-              value={test.display_value}
-              defaultChecked
-              onChange={handleCheckboxChange} disabled
-            />
+    selectedMedicalTestIndividualList.map((test, index) => {
+      const testName = test.display_value;
+      const testCost = selectedIndividualListCost[testName] || "N/A"; // Use the cost from individualTestListCost or "N/A" if not found
+      return (
+        <div className="py-2" key={index}>
+          <div className="flex flex-row justify-between h-10 md:h-6 px-2">
+            <div className="text-left text-darkBlue text-sm">{testName}</div>
+            <div className="text-center text-darkBlue text-sm">{testCost}</div>
           </div>
+          <div className="border-b border-1 border-mediumBlue w-5/5 mx-auto"></div>
         </div>
-        <div className="border-b border-1 border-mediumBlue w-5/5 mx-auto"></div>
-      </div>
-    ));
+      );
+    });
+  
 
   const handleProceed = () => {
     if (selectedIndividualList && selectedIndividualList.length > 0) {

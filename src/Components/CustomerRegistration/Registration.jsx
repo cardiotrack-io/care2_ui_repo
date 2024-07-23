@@ -10,8 +10,9 @@ import dayjs from "dayjs";
 import CustomerDetailsForm from "./CustomerDetailsForm";
 import { format } from "date-fns";
 import axios from "axios";
-import PaymentGatewayEndPoints from '../../Constants/PaymentGatewayEndPoints';
+import PaymentGatewayEndPoints from "../../Constants/PaymentGatewayEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
+import Loading from "../Utility/Loading";
 
 const Registration = ({
   customerName,
@@ -28,7 +29,7 @@ const Registration = ({
   total,
   selectedPackageName,
   paymentStatus,
-  setPaymentStatus
+  setPaymentStatus,
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -38,7 +39,7 @@ const Registration = ({
   const [timeError, setTimeError] = useState(""); // State for time error message
   const [error, setError] = useState(""); // State for general error messages
   const [isFormValid, setIsFormValid] = useState(false); // Track form validity
-
+  const [loading, setLoading] = useState(false)
 
   const getFormattedTime = () => {
     return appointmentTime
@@ -89,7 +90,7 @@ const Registration = ({
 
     script.onload = async () => {
       generateOrder();
-    };  
+    };
     script.onerror = () => {
       alert("Razorpay SDK failed to load. Are you online?");
     };
@@ -117,7 +118,7 @@ const Registration = ({
 
       if (response.data && response.data.id) {
         displayCheckout(response.data.amount, response.data.id);
-        console.log("Order Generated: "+response.data,response.data.id)
+        console.log("Order Generated: " + response.data, response.data.id);
       } else {
         console.error("Invalid response from backend API", response.data);
       }
@@ -143,10 +144,10 @@ const Registration = ({
           payment_id: response.razorpay_payment_id,
           signature: response.razorpay_signature,
         };
-        console.log("Payment Success: ",data)
-        console.log(amount)
+        console.log("Payment Success: ", data);
+        console.log(amount);
         //savePaymentInfo(data.order_id, data.payment_id, data.signature, appointmentDate, amount)
-        sendOrderToServer_Validated(data,amount)
+        sendOrderToServer_Validated(data, amount);
       },
       modal: {
         ondismiss: function () {
@@ -171,16 +172,17 @@ const Registration = ({
 
   async function sendOrderToServer_Validated(paymentData) {
     const originalDate = new Date(appointmentDate);
-    const options = { day: 'numeric', month: 'short', year: 'numeric' };
+    const options = { day: "numeric", month: "short", year: "numeric" };
 
-    const formattedDate = originalDate.toLocaleDateString('en-GB', options)
-      .split(' ')
-      .map((part, index) => index === 1 ? part.replace('.', '') : part) // Remove period from month abbreviation
-      .join('-');
+    const formattedDate = originalDate
+      .toLocaleDateString("en-GB", options)
+      .split(" ")
+      .map((part, index) => (index === 1 ? part.replace(".", "") : part)) // Remove period from month abbreviation
+      .join("-");
     const formattedTime = dayjs(appointmentTime, "HH:mm").format("HH:mm");
-    console.log(formattedTime)
-    console.log(formattedDate)
-    console.log(selectedPackageName)
+    console.log(formattedTime);
+    console.log(formattedDate);
+    console.log(selectedPackageName);
     const data = {
       order: {
         Appointment_Date: formattedDate,
@@ -190,12 +192,12 @@ const Registration = ({
           address_line_1: customerAddress.addressLine1,
           // address_line_2: customerAddress.addressLine2 || "",
         },
-        Customer_City: customerAddress.city,
+        Customer_City: customerAddress.district,
         Customer_PIN_Code: customerAddress.pincode,
         Customer_Statee: customerAddress.state,
         Customer_Name: customerName,
         Gender: customerAddress.gender[0].toUpperCase(),
-        Life_Assured_Email: customerAddress.email,
+        // Life_Assured_Email: customerAddress.email,
         Package_Name: selectedPackageName,
       },
       payment: {
@@ -205,12 +207,12 @@ const Registration = ({
         Amount: total.toString(),
       },
     };
-    console.log('Order ID:', paymentData.order_id);
-console.log('Payment ID:', paymentData.payment_id);
-console.log('Generated Signature:', paymentData.signature);
+    console.log("Order ID:", paymentData.order_id);
+    console.log("Payment ID:", paymentData.payment_id);
+    console.log("Generated Signature:", paymentData.signature);
 
-    console.log('Request Data:', data);
-    
+    console.log("Request Data:", data);
+    setLoading(true);
     try {
       const response = await axios.post(
         PaymentGatewayEndPoints.validate_order,
@@ -222,45 +224,47 @@ console.log('Generated Signature:', paymentData.signature);
           },
         }
       );
-    
+
       if (response.status === 200) {
-        console.log('Response Data:', response);
-        setPaymentStatus("Paid")
+        console.log("Response Data:", response);
+        setLoading(false);
+        setPaymentStatus("Paid");
         navigateToThankyouPage();
       }
     } catch (error) {
       if (error.response) {
         // Server responded with a status other than 200 range
-        console.error('Error response:', error.response.data);
-        console.error('Error status:', error.response.status);
-        console.error('Error headers:', error.response.headers);
+        console.error("Error response:", error.response.data);
+        console.error("Error status:", error.response.status);
+        console.error("Error headers:", error.response.headers);
       } else if (error.request) {
         // No response was received
-        console.error('Error request:', error.request);
+        console.error("Error request:", error.request);
       } else {
         // Error setting up the request
-        console.error('Error message:', error.message);
+        console.error("Error message:", error.message);
       }
-      console.error('Error config:', error.config);
+      console.error("Error config:", error.config);
     }
   }
 
- function navigateToThankyouPage() {
-  setCurrentPage('thankYou', {
-    customerName,
-    customerAddress,
-    appointmentDate,
-    appointmentTime,
-    total: totalAfterDiscount,
-    paymentStatus:paymentStatus,
-    selectedIndividualList
-  });
+  function navigateToThankyouPage() {
+    setCurrentPage("thankYou", {
+      customerName,
+      customerAddress,
+      appointmentDate,
+      appointmentTime,
+      total: totalAfterDiscount,
+      paymentStatus: paymentStatus,
+      selectedIndividualList,
+    });
   }
-    
 
   const handleTimeChange = (newValue) => {
     const selectedDate = dayjs(appointmentDate).startOf("day");
-    const selectedTime = selectedDate.hour(newValue.hour()).minute(newValue.minute());
+    const selectedTime = selectedDate
+      .hour(newValue.hour())
+      .minute(newValue.minute());
     const currentTime = dayjs();
     const startOfDay = selectedDate.hour(8); // 8 AM
     const endOfDay = selectedDate.hour(22); // 10 PM
@@ -269,7 +273,10 @@ console.log('Generated Signature:', paymentData.signature);
 
     if (selectedDate.isSame(dayjs().startOf("day"))) {
       // Today: Allow times from current time to 10 PM
-      if (selectedTime.isAfter(currentTime) && selectedTime.isBefore(endOfDay)) {
+      if (
+        selectedTime.isAfter(currentTime) &&
+        selectedTime.isBefore(endOfDay)
+      ) {
         isValid = true;
       }
     } else {
@@ -283,14 +290,18 @@ console.log('Generated Signature:', paymentData.signature);
       setAppointmentTime(newValue.format("HH:mm"));
       setTimeError(""); // Clear error if the time is valid
     } else {
-      setTimeError("Invalid time selected. Please select a time between 8 AM and 10 PM."); // Set error message if the time is invalid
+      setTimeError(
+        "Invalid time selected. Please select a time between 8 AM and 10 PM."
+      ); // Set error message if the time is invalid
     }
     setShowTimePicker(false);
     calculateTotal();
   };
 
   const navigateToHomePage = () => {
-    const userConfirmed = window.confirm("Do you want to navigate to the home page?");
+    const userConfirmed = window.confirm(
+      "Do you want to navigate to the home page?"
+    );
     if (userConfirmed) {
       window.location.href = "/";
     }
@@ -303,7 +314,9 @@ console.log('Generated Signature:', paymentData.signature);
           <div className="header_container flex justify-center items-center">
             <div className="flex flex-col -space-y-4 slide-in-left">
               <div className="cardiotrack" onClick={navigateToHomePage}>
-                <p className="font-bold text-black cursor-pointer">Cardiotrack</p>
+                <p className="font-bold text-black cursor-pointer">
+                  Cardiotrack
+                </p>
               </div>
               <div className="flex justify-center space-x-1 care-medical-test">
                 <div className="care">
@@ -456,16 +469,25 @@ console.log('Generated Signature:', paymentData.signature);
               Total Amount
             </p>
           </div>
-          <div className="mt-4 flex justify-between items-center">
+          {/* <div className="mt-4 flex justify-between items-center">
             <p className="text-darkBlue text-md font-bold">
               <span className="line-through">{total}</span>
               <span className="ml-2">{totalAfterDiscount}</span>
             </p>
+          </div> */}
+          <div className="mt-4 flex justify-between items-center">
+            <p className="text-darkBlue text-md font-bold">
+              {discount > 0 && <span className="line-through">{total}</span>}
+              <span className={discount > 0 ? "ml-2" : ""}>
+                {discount > 0 ? totalAfterDiscount : total}
+              </span>
+            </p>
           </div>
         </div>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+        {loading && <Loading />}
         <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
-          <button
+          {/* <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
             onClick={() => {
               // Mark as COD
@@ -474,7 +496,7 @@ console.log('Generated Signature:', paymentData.signature);
             }}
           >
             <p className="font-light text-white text-center">Pay Later</p>
-          </button>
+          </button> */}
           <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
             onClick={loadRazorpay}
