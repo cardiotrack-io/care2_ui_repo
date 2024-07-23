@@ -48,7 +48,7 @@ const ThankYouPage = ({
           </p>
           <p className="text-md text-darkBlue mt-2">
             <strong>Address:</strong> {customerAddress.addressLine1},{" "}
-            {customerAddress.city}, {customerAddress.state},{" "}
+            {customerAddress.district}, {customerAddress.state},{" "}
             {customerAddress.pincode}
           </p>
           {/* {customerAddress.addressLine2}, */}
