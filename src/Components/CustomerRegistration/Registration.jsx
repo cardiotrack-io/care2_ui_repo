@@ -13,6 +13,7 @@ import axios from "axios";
 import PaymentGatewayEndPoints from "../../Constants/PaymentGatewayEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 import Loading from "../Utility/Loading";
+import Header from "../Utility/Header";
 
 const Registration = ({
   customerName,
@@ -311,6 +312,7 @@ const Registration = ({
   return (
     <>
       <div className="relative flex flex-col w-full h-screen px-6 items-center">
+      <Header />
         <div className="container mt-11">
           <div className="header_container flex justify-center items-center">
             <div className="flex flex-col -space-y-4 slide-in-left">
