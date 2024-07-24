@@ -90,3 +90,5 @@ env:
     value: prod
   - name: RAZORPAY_KEY
     value: rzp_live_tCVgO0XE1AniLL
+  - name: BACKEND_URL
+    value: https://v2prod.cardiotrack.link/clientuibackendsvc
