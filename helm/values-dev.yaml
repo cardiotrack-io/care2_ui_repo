@@ -88,3 +88,5 @@ affinity: {}
 env:
   - name: XENV
     value: dev
+  - name: RAZORPAY_KEY
+    value: rzp_test_0ZYAW8AHo0mI32

@@ -131,8 +131,9 @@ const Registration = ({
   };
 
   const displayCheckout = (amount, orderId) => {
+    const razorpay_key = import.meta.env.RAZORPAY_KEY
     const options = {
-      key: "rzp_test_0ZYAW8AHo0mI32", // Use your Razorpay test/live key here
+      key: razorpay_key, // Use your Razorpay test/live key here
       amount: amount,
       currency: "INR",
       name: "Cardiotrack Care",
