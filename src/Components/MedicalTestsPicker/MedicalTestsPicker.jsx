@@ -22,21 +22,24 @@ const MedicalTestsPicker = ({
   total,
   setTotal
 }) => {
-  // const [total, setTotal] = useState(selectedMedicalTestsPackageCost);
   useEffect(() => {
-    setTotal(selectedMedicalTestsPackageCost);
-  }, [selectedMedicalTestsPackageCost, setTotal]);
+    const packageCost = isNaN(Number(selectedMedicalTestsPackageCost)) ? 0 : Number(selectedMedicalTestsPackageCost);
+    setTotal(packageCost.toFixed(2));
+  }, [selectedMedicalTestsPackageCost]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleCheckboxChange = (e) => {
     const testName = e.target.value;
     const testPrice = allIndividualTests[testName] ? parseFloat(allIndividualTests[testName]) : 0;
-    console.log(selectedIndividualList);
+
     if (testPrice > 0) {
       const updatedList = e.target.checked
         ? [...(selectedIndividualList || []), testName]
         : (selectedIndividualList || []).filter((item) => item !== testName);
       
       const updatedTotal = e.target.checked ? total + testPrice : total - testPrice;
+      const finalTotal = Math.max(0, Number(updatedTotal.toFixed(2))); // Ensure total doesn't go negative
       
       const updatedCostList = { ...selectedIndividualListCost };
 
@@ -47,31 +50,58 @@ const MedicalTestsPicker = ({
       }
 
       setSelectedIndividualList(updatedList);
-      console.log(updatedCostList);
       setSelectedIndividualListCost(updatedCostList);
-      setTotal(updatedTotal);
+      if(updatedList.length === 0) {
+        setTotal(0);
+      } else {
+        setTotal(finalTotal);
+      }
     }
   };
 
+  // const renderItems = () =>
+  //   selectedMedicalTestIndividualList.map((test, index) => (
+  //     <div className="py-2" key={index}>
+  //       <div className="flex flex-row justify-between h-10 md:h-6 px-2">
+  //         <div className="text-left text-darkBlue text-sm">{test.display_value}</div>
+  //         <div className="px-10">
+  //           <input
+  //             className="rounded-checkbox"
+  //             type="checkbox"
+  //             name="individual_tests_cb"
+  //             value={test.display_value}
+  //             defaultChecked
+  //             onChange={handleCheckboxChange}
+  //           />
+  //         </div>
+  //       </div>
+  //       <div className="border-b border-1 border-mediumBlue w-5/5 mx-auto"></div>
+  //     </div>
+  //   ));
+
   const renderItems = () =>
-    selectedMedicalTestIndividualList.map((test, index) => (
-      <div className="py-2" key={index}>
-        <div className="flex flex-row justify-between h-10 md:h-6 px-2">
-          <div className="text-left text-darkBlue text-sm">{test.display_value}</div>
-          <div className="px-10">
-            <input
-              className="rounded-checkbox"
-              type="checkbox"
-              name="individual_tests_cb"
-              value={test.display_value}
-              defaultChecked
-              onChange={handleCheckboxChange}
-            />
+    selectedMedicalTestIndividualList.map((test, index) => {
+      const testName = test.display_value;
+      const testCost = selectedIndividualListCost[testName] || "N/A"; // Use the cost from individualTestListCost or "N/A" if not found
+      return (
+        <div className="py-2" key={index}>
+          <div className="flex flex-row justify-between h-10 md:h-6 px-2">
+            <div className="text-left text-darkBlue text-sm">{testName}</div>
+            <div className="text-center text-darkBlue text-sm">{testCost}</div>
           </div>
+          <div className="border-b border-1 border-mediumBlue w-5/5 mx-auto"></div>
         </div>
-        <div className="border-b border-1 border-mediumBlue w-5/5 mx-auto"></div>
-      </div>
-    ));
+      );
+    });
+  
+
+  const handleProceed = () => {
+    if (selectedIndividualList && selectedIndividualList.length > 0) {
+      setCurrentPage("registration");
+    } else {
+      setErrorMessage("Please select at least one test to proceed.");
+    }
+  };
 
   return (
     <div className="relative flex flex-col overflow-auto w-full px-6 items-center">
@@ -116,16 +146,19 @@ const MedicalTestsPicker = ({
           </div>
         </div>
       )}
-      <div className="relative flex w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
-        <button
-          className="w-full starting_button bg-darkGray lg:w-1/4"
-          onClick={() => {
-            setCurrentPage("registration")
-          }}
-        >
-          <p className="font-light text-white">Proceed</p>
-        </button>
-      </div>
+      {errorMessage && (
+        <div className="error_message text-red-500 text-xs mt-2">
+          <p>{errorMessage}</p>
+        </div>
+      )}
+       <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
+          <button
+            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
+            onClick={handleProceed}
+          >
+            <p className="font-light text-white text-center">Proceed</p>
+          </button>
+        </div>
     </div>
   );
 };

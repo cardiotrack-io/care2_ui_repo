@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import TestPlus from "../../assets/test_plus.svg";
 import FullBody from "../../assets/MedicalPackages/CRA.svg";
 import Heart from "../../assets/MedicalPackages/Heart.svg";
@@ -7,7 +8,6 @@ import StandingMedicalLady from "../../assets/MedicalLadyStanding.svg";
 import axios from "axios";
 import MedicalTestApiEndPoints from "../../Constants/MedicalTestEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
-import { useEffect, useState } from "react";
 import DisplayTestList from "./TestList";
 
 const MedicalPackageIcons = [Lungs, Ovary, Heart, FullBody];
@@ -30,17 +30,22 @@ const MedicalTests = ({
   selectedIndividualListCost,
   setSelectedIndividualListCost,
   setCurrentPage,
+  selectedPackageName,
+  setSelectedPackageName
 }) => {
   const [localTestSelect, setLocalTestSelect] = useState(null);
   const [individualTestList, setIndividualTestList] = useState(null);
   const [packageCost, setPackageCost] = useState(null);
-
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleMainPackageSelect = (packageName) => {
     const selectedPackage = allMedicalTests.find(ele => ele.Insurer_Package_Name === packageName);
     if (selectedPackage) {
       setIndividualTestList(selectedPackage.Package_Details);
-      console.log(selectedPackage) // all package details
+      console.log(selectedPackage); // all package details
+      setSelectedPackageName(selectedPackage.Cardiotrack_Package_Name);
+      console.log(selectedPackage.Cardiotrack_Package_Name);
+      console.log(selectedPackageName);
       setPackageCost(selectedPackage.Core_Package_Rate_Negotiated);
       setSelectedMedicalTests(packageName);
       setSelectedMedicalTestIndividualList(selectedPackage.Package_Details);
@@ -48,10 +53,12 @@ const MedicalTests = ({
 
       const individualTestList = selectedPackage.Package_Details.map(element => element.display_value);
       const individualTestListCost = Object.fromEntries(individualTestList.map(name => [name, allIndividualTests[name]]));
-      console.log(individualTestListCost)
+      console.log(individualTestListCost);
       setSelectedIndividualList(individualTestList);
       setSelectedIndividualListCost(individualTestListCost);
       setLocalTestSelect(packageName);
+      console.log(setLocalTestSelect);
+      setErrorMessage(""); // Clear any existing error message
     }
   };
 
@@ -122,7 +129,7 @@ const MedicalTests = ({
           </div>
         </div>
         <div className="flex justify-center py-3">
-          <p className="text-darkBlue text-sm font-semibold">Select your Health Package</p>
+          <p className="text-darkBlue text-sm font-semibold">Select your Health Test</p>
         </div>
       </div>
       {allMedicalTests && (
@@ -149,11 +156,20 @@ const MedicalTests = ({
           <DisplayTestList individualTestList={individualTestList} packageCost={packageCost} />
         </div>
       )}
+      {errorMessage && (
+        <div className="error_message text-red-500 text-xs mt-2">
+          <p>{errorMessage}</p>
+        </div>
+      )}
       <div className="relative mt-5 flex w-11/12 pb-4 text-center justify-center items-center space-x-2">
         <button
           className="w-full starting_button bg-darkGray lg:w-1/4"
           onClick={() => {
-            setCurrentPage("medicalTestsPicker");
+            if (individualTestList && individualTestList.length > 0) {
+              setCurrentPage("medicalTestsPicker");
+            } else {
+              setErrorMessage("Please select a package to proceed.");
+            }
           }}
         >
           <p className="font-light text-white">Proceed</p>

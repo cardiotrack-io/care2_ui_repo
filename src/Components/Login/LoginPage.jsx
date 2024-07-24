@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import qs from "qs";
 import UserApiEndPoints from "../../Constants/UserEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
+import { data } from "autoprefixer";
 
 function LoginPage({
   customerPhone,
@@ -78,6 +79,10 @@ function LoginPage({
         if (data.status === 400) {
           setOTPStatus(false);
           setOtp("");
+          setErrorState({
+            error_status: true,
+            error_reason: "Invalid OTP. Please try again.",
+          });
         }
         if (data.status === 200) {
           setOTPStatus(true);
@@ -140,7 +145,7 @@ function LoginPage({
   return (
     <div className="relative flex flex-col w-full h-screen px-6 ">
       <div className="container mt-11">
-        <div className="flex flex-col -space-y-4 slide-in-left">
+        <div className="flex flex-col -space-y-4 slide-in-left mt-5">
           <div className="cardiotrack slide-in-left">
             <p className="font-bold text-black ">Cardiotrack</p>
           </div>
@@ -170,10 +175,10 @@ function LoginPage({
               </p>
             </div>
           </div>
-          <div className="error_container w-full transition-all">
+          <div className="error_container transition-all">
             {errorState.error_status && (
-              <div className="error transition-opacity">
-                <p className=" text-red-500 text-xs text-left ">
+              <div className="error transition-opacity mx-3">
+                <p className=" text-red-500 text-xs text-left">
                   {errorState.error_reason}
                 </p>
               </div>
@@ -202,7 +207,7 @@ function LoginPage({
             </div>
           )}
         </div>
-        <div className="absolute flex items-center justify-center w-full pb-8 text-center bottom-2 -left-1">
+        <div className="absolute flex items-center justify-center w-full pb-8 text-center bottom-10 -left-1">
           <div className="w-full starting_button">
             <button
               className="w-4/5 starting_button bg-darkGray lg:w-1/4"
@@ -216,6 +221,7 @@ function LoginPage({
                     sendOTP(customerPhone);
                   }
                 } else if (phoneStatus && !OTPStatus) {
+                  console.log(OTPStatus+"OTP Status")
                   let joinedOTP = otp.join("");
                   setLoading(false);
                   getOtpValidationStatus(joinedOTP, customerPhone);

@@ -10,8 +10,9 @@ import dayjs from "dayjs";
 import CustomerDetailsForm from "./CustomerDetailsForm";
 import { format } from "date-fns";
 import axios from "axios";
-import backEndUrl from "../../Constants/backEndURL";
+import PaymentGatewayEndPoints from "../../Constants/PaymentGatewayEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
+import Loading from "../Utility/Loading";
 
 const Registration = ({
   customerName,
@@ -23,9 +24,12 @@ const Registration = ({
   appointmentTime,
   setAppointmentTime,
   setCurrentPage,
+  customerPhone,
   selectedIndividualList,
   total,
-  setTotal,
+  selectedPackageName,
+  paymentStatus,
+  setPaymentStatus,
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -33,6 +37,9 @@ const Registration = ({
   const [discount, setDiscount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(total);
   const [timeError, setTimeError] = useState(""); // State for time error message
+  const [error, setError] = useState(""); // State for general error messages
+  const [isFormValid, setIsFormValid] = useState(false); // Track form validity
+  const [loading, setLoading] = useState(false)
 
   const getFormattedTime = () => {
     return appointmentTime
@@ -51,45 +58,67 @@ const Registration = ({
       setDiscount(10); // Example discount for a specific promocode
     } else {
       setDiscount(0);
+      setError("Promo Code is Invalid");
     }
     calculateTotal();
   };
 
+  const validateInputs = () => {
+    if (!isFormValid) {
+      setError("Please enter valid information in all fields.");
+      return false;
+    }
+    if (!appointmentDate) {
+      setError("Please select an appointment date");
+      return false;
+    }
+    if (!appointmentTime) {
+      setError("Please select an appointment time");
+      return false;
+    }
+    setError(""); // Clear any previous errors
+    return true;
+  };
+
   const loadRazorpay = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
 
     script.onload = async () => {
-      handlePayment();
-    };  
+      generateOrder();
+    };
     script.onerror = () => {
       alert("Razorpay SDK failed to load. Are you online?");
     };
     document.body.appendChild(script);
   };
 
-  const handlePayment = async () => {
+  const generateOrder = async () => {
     try {
       const requestData = {
-        amount: totalAfterDiscount, // Amount in paise
+        amount: Math.floor(total) * 100, // Amount in paise
         currency: "INR",
         receipt: "test-order",
       };
 
       const response = await axios.post(
-        `${backEndUrl}/care/payment/order`,
+        PaymentGatewayEndPoints.create_order,
         requestData,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Basic Y2xpZW50LXVpLWJhY2tlbmQ6NW9VOCxGXjo3LyNE",
+            Authorization: AuthorizationKey.key,
           },
         }
       );
-      console.log(response.data, response.data.id + "Response");
 
       if (response.data && response.data.id) {
         displayCheckout(response.data.amount, response.data.id);
+        console.log("Order Generated: " + response.data, response.data.id);
       } else {
         console.error("Invalid response from backend API", response.data);
       }
@@ -102,8 +131,9 @@ const Registration = ({
   };
 
   const displayCheckout = (amount, orderId) => {
+    const razorpay_key = import.meta.env.RAZORPAY_KEY
     const options = {
-      key: "rzp_test_0ZYAW8AHo0mI32", // Use your Razorpay test/live key here
+      key: razorpay_key, // Use your Razorpay test/live key here
       amount: amount,
       currency: "INR",
       name: "Cardiotrack Care",
@@ -115,29 +145,10 @@ const Registration = ({
           payment_id: response.razorpay_payment_id,
           signature: response.razorpay_signature,
         };
-
-        try {
-          const verificationResponse = await axios.post(
-            `https://api.razorpay.com/v1/orders`,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Basic Y2xpZW50LXVpLWJhY2tlbmQ6NW9VOCxGXjo3LyNE`,
-              },
-            }
-          );
-          if (verificationResponse.data.success) {
-            alert("Payment is successful");
-          } else {
-            alert("Invalid signature, payment verification failed");
-          }
-        } catch (error) {
-          console.error(
-            "Error verifying payment:",
-            error.response ? error.response.data : error.message
-          );
-        }
+        console.log("Payment Success: ", data);
+        console.log(amount);
+        //savePaymentInfo(data.order_id, data.payment_id, data.signature, appointmentDate, amount)
+        sendOrderToServer_Validated(data, amount);
       },
       modal: {
         ondismiss: function () {
@@ -145,12 +156,12 @@ const Registration = ({
         },
       },
       prefill: {
-        name: `${customerName.firstName} ${customerName.lastName}`,
+        name: `${customerName}`,
         email: "example@example.com",
         contact: "9999999999",
       },
       notes: {
-        address: `${customerAddress.addressLine1} ${customerAddress.addressLine2}`,
+        address: `${customerAddress.addressLine1}`,
       },
       theme: {
         color: "#61dafb",
@@ -160,21 +171,118 @@ const Registration = ({
     paymentObject.open();
   };
 
+  async function sendOrderToServer_Validated(paymentData) {
+    const originalDate = new Date(appointmentDate);
+    const options = { day: "numeric", month: "short", year: "numeric" };
+
+    const formattedDate = originalDate
+      .toLocaleDateString("en-GB", options)
+      .split(" ")
+      .map((part, index) => (index === 1 ? part.replace(".", "") : part)) // Remove period from month abbreviation
+      .join("-");
+    const formattedTime = dayjs(appointmentTime, "HH:mm").format("HH:mm");
+    console.log(formattedTime);
+    console.log(formattedDate);
+    console.log(selectedPackageName);
+    const data = {
+      order: {
+        Appointment_Date: formattedDate,
+        Appointment_Time: appointmentTime,
+        Contact_Number1: customerPhone,
+        Customer_Address: {
+          address_line_1: customerAddress.addressLine1,
+          // address_line_2: customerAddress.addressLine2 || "",
+        },
+        Customer_City: customerAddress.district,
+        Customer_PIN_Code: customerAddress.pincode,
+        Customer_Statee: customerAddress.state,
+        Customer_Name: customerName,
+        Gender: customerAddress.gender[0].toUpperCase(),
+        // Life_Assured_Email: customerAddress.email,
+        Package_Name: selectedPackageName,
+      },
+      payment: {
+        Payment_Order_ID: paymentData.order_id,
+        Payment_ID: paymentData.payment_id,
+        Payment_Signature: paymentData.signature,
+        Amount: total.toString(),
+      },
+    };
+    console.log("Order ID:", paymentData.order_id);
+    console.log("Payment ID:", paymentData.payment_id);
+    console.log("Generated Signature:", paymentData.signature);
+
+    console.log("Request Data:", data);
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        PaymentGatewayEndPoints.validate_order,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: AuthorizationKey.key,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Response Data:", response);
+        setLoading(false);
+        setPaymentStatus("Paid");
+        navigateToThankyouPage();
+      }
+    } catch (error) {
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error("Error response:", error.response.data);
+        console.error("Error status:", error.response.status);
+        console.error("Error headers:", error.response.headers);
+      } else if (error.request) {
+        // No response was received
+        console.error("Error request:", error.request);
+      } else {
+        // Error setting up the request
+        console.error("Error message:", error.message);
+      }
+      console.error("Error config:", error.config);
+    }
+  }
+
+  function navigateToThankyouPage() {
+    setCurrentPage("thankYou", {
+      customerName,
+      customerAddress,
+      appointmentDate,
+      appointmentTime,
+      total: totalAfterDiscount,
+      paymentStatus: paymentStatus,
+      selectedIndividualList,
+    });
+  }
+
   const handleTimeChange = (newValue) => {
     const selectedDate = dayjs(appointmentDate).startOf("day");
+    const selectedTime = selectedDate
+      .hour(newValue.hour())
+      .minute(newValue.minute());
     const currentTime = dayjs();
-    const endOfDay = selectedDate.add(22, "hours"); // 10 PM
+    const startOfDay = selectedDate.hour(8); // 8 AM
+    const endOfDay = selectedDate.hour(22); // 10 PM
+
     let isValid = false;
 
     if (selectedDate.isSame(dayjs().startOf("day"))) {
       // Today: Allow times from current time to 10 PM
-      if (newValue.isAfter(currentTime) && newValue.isBefore(endOfDay)) {
+      if (
+        selectedTime.isAfter(currentTime) &&
+        selectedTime.isBefore(endOfDay)
+      ) {
         isValid = true;
       }
     } else {
       // Any other day: Allow times from 8 AM to 10 PM
-      const startOfDay = selectedDate.add(8, "hours"); // 8 AM
-      if (newValue.isAfter(startOfDay) && newValue.isBefore(endOfDay)) {
+      if (selectedTime.isAfter(startOfDay) && selectedTime.isBefore(endOfDay)) {
         isValid = true;
       }
     }
@@ -183,14 +291,18 @@ const Registration = ({
       setAppointmentTime(newValue.format("HH:mm"));
       setTimeError(""); // Clear error if the time is valid
     } else {
-      setTimeError("Invalid time selected. Please select a time between 8 AM and 10 PM."); // Set error message if the time is invalid
+      setTimeError(
+        "Invalid time selected. Please select a time between 8 AM and 10 PM."
+      ); // Set error message if the time is invalid
     }
     setShowTimePicker(false);
     calculateTotal();
   };
 
   const navigateToHomePage = () => {
-    const userConfirmed = window.confirm("Do you want to navigate to the home page?");
+    const userConfirmed = window.confirm(
+      "Do you want to navigate to the home page?"
+    );
     if (userConfirmed) {
       window.location.href = "/";
     }
@@ -203,7 +315,9 @@ const Registration = ({
           <div className="header_container flex justify-center items-center">
             <div className="flex flex-col -space-y-4 slide-in-left">
               <div className="cardiotrack" onClick={navigateToHomePage}>
-                <p className="font-bold text-black cursor-pointer">Cardiotrack</p>
+                <p className="font-bold text-black cursor-pointer">
+                  Cardiotrack
+                </p>
               </div>
               <div className="flex justify-center space-x-1 care-medical-test">
                 <div className="care">
@@ -307,11 +421,7 @@ const Registration = ({
                 setCustomerName={setCustomerName}
                 customerAddress={customerAddress}
                 setCustomerAddress={setCustomerAddress}
-                appointmentDate={appointmentDate}
-                setAppointmentDate={setAppointmentDate}
-                appointmentTime={appointmentTime}
-                setAppointmentTime={setAppointmentTime}
-                setCurrentPage={setCurrentPage}
+                onValidationChange={setIsFormValid}
               />
             </div>
           </div>
@@ -360,22 +470,34 @@ const Registration = ({
               Total Amount
             </p>
           </div>
-          <div className="mt-4 flex justify-between items-center">
+          {/* <div className="mt-4 flex justify-between items-center">
             <p className="text-darkBlue text-md font-bold">
               <span className="line-through">{total}</span>
               <span className="ml-2">{totalAfterDiscount}</span>
             </p>
+          </div> */}
+          <div className="mt-4 flex justify-between items-center">
+            <p className="text-darkBlue text-md font-bold">
+              {discount > 0 && <span className="line-through">{total}</span>}
+              <span className={discount > 0 ? "ml-2" : ""}>
+                {discount > 0 ? totalAfterDiscount : total}
+              </span>
+            </p>
           </div>
         </div>
+        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+        {loading && <Loading />}
         <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
-          <button
+          {/* <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
             onClick={() => {
               // Mark as COD
+              setPaymentStatus("COD");
+              navigateToThankyouPage();
             }}
           >
             <p className="font-light text-white text-center">Pay Later</p>
-          </button>
+          </button> */}
           <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
             onClick={loadRazorpay}
