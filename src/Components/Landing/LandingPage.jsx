@@ -1,4 +1,5 @@
 import "./LandingPage.css";
+import Header from "../Utility/Header";
 
 function LandingPage({ setCurrentPage }) {
   function handleGetStarted() {
@@ -7,9 +8,10 @@ function LandingPage({ setCurrentPage }) {
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-screen">
+      <Header />
       <div className="flip-in-hor-top absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/3">
         <div className="cardiotrack">
-          <p className="font-bold text-black ">Cardiotrack</p>
+          <p className="font-bold text-black">Cardiotrack</p>
         </div>
         <div className="flex justify-center space-x-1 care-medical-test">
           <div className="care ">
@@ -23,7 +25,7 @@ function LandingPage({ setCurrentPage }) {
         </div>
       </div>
       <div className="absolute bottom-10 left-0 w-full pb-8 text-center">
-        <div className="warning mb-1">
+        <div className="warning m-1">
           <p className="text-black">
             *by clicking on “Get Started” you have agreed to our T&C which are
             going to be applied
