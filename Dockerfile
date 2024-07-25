@@ -13,7 +13,13 @@ COPY ./.env.production /app/
 EXPOSE 4000
 
 #CMD [ "npm", "run", "$NPM_CMD" ]
-RUN npm run build --configuration=$ENVIRONMENT
+RUN if [ "$ENVIRONMENT" = "development" ]; then \
+  RUN npm run dev
+fi
+
+RUN if [ "$ENVIRONMENT" = "production" ]; then \
+  RUN npm run build
+fi
 
 # FROM node:18-alpine
 
