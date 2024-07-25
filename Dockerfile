@@ -1,5 +1,6 @@
 FROM node:20
 
+ARG NPM_CMD
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -8,7 +9,7 @@ COPY ./.env.development /app/
 COPY ./.env.production /app/
 EXPOSE 4000
 
-CMD [ "npm", "run", ${NPM_CMD} ]
+CMD [ "npm", "run", "$NPM_CMD" ]
 
 # FROM node:18-alpine
 
