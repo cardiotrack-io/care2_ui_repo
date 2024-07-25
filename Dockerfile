@@ -1,8 +1,8 @@
 FROM node:20
 
-ARG NPM_CMD
-ENV NPM_CMD $NPM_CMD
-CMD echo $NPM_CMD
+ARG ENVIRONMENT
+ENV ENVIRONMENT $ENVIRONMENT
+CMD echo $ENVIRONMENT
 
 WORKDIR /app
 COPY package*.json ./
@@ -12,7 +12,8 @@ COPY ./.env.development /app/
 COPY ./.env.production /app/
 EXPOSE 4000
 
-CMD [ "npm", "run", "$NPM_CMD" ]
+#CMD [ "npm", "run", "$NPM_CMD" ]
+RUN npm run build --configuration=$ENVIRONMENT
 
 # FROM node:18-alpine
 
