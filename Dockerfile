@@ -14,10 +14,10 @@ EXPOSE 4000
 
 #CMD [ "npm", "run", "$NPM_CMD" ]
 RUN if [ "$ENVIRONMENT" = "development" ] ; then \
-  npm run dev ; \
+  CMD npm run dev ; \
   fi
 RUN if [ "$ENVIRONMENT" = "production" ] ; then \
-  npm run build ; \
+  CMD npm run build ; \
   fi
 
 # FROM node:18-alpine
