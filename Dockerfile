@@ -12,13 +12,7 @@ COPY ./.env.development /app/
 COPY ./.env.production /app/
 EXPOSE 4000
 
-#CMD [ "npm", "run", "$NPM_CMD" ]
-RUN if [ "$ENVIRONMENT" = "development" ] ; then \
-  CMD [ "npm", "run", "dev"] ; \
-  fi
-RUN if [ "$ENVIRONMENT" = "production" ] ; then \
-CMD [ "npm", "run", "build"] ; \
-  fi
+CMD [ "npm", "run", "$ENVIRONMENT" ]
 
 # FROM node:18-alpine
 
