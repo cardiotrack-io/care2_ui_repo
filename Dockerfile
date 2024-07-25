@@ -12,7 +12,7 @@ COPY ./.env.development /app/
 COPY ./.env.production /app/
 EXPOSE 4000
 
-CMD [ "npm", "run", "$ENVIRONMENT" ]
+CMD [ "npm", "run", "dev" ]
 
 # FROM node:18-alpine
 
