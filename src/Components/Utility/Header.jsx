@@ -15,6 +15,7 @@ const Header = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0,0);
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -23,7 +24,7 @@ const Header = () => {
 
   return (
     <div className={`header-container ${isVisible ? 'visible' : 'hidden'}`}>
-       <a href="https://wa.me/8951217111" className="whatsapp-link" target="_blank" rel="noopener noreferrer">
+       <a href="https://wa.me/+918951217111" className="whatsapp-link" target="_blank" rel="noopener noreferrer">
         <FontAwesomeIcon icon={faWhatsapp} className="whatsapp-icon" />
         <span className="company-number">+918951217111</span>
       </a>
