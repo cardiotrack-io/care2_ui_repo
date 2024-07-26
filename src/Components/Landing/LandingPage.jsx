@@ -6,6 +6,10 @@ function LandingPage({ setCurrentPage }) {
     setCurrentPage("login");
   }
 
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to top on component mount
+  }, []);
+
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-screen overflow-hidden">
       <Header />
