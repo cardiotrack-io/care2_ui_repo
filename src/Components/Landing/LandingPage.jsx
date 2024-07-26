@@ -7,7 +7,7 @@ function LandingPage({ setCurrentPage }) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full h-screen">
+    <div className="relative flex flex-col items-center justify-center w-full h-screen overflow-hidden">
       <Header />
       <div className="flip-in-hor-top absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/3">
         <div className="cardiotrack">
