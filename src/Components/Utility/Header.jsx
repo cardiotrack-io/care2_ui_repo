@@ -7,7 +7,7 @@ const Header = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   const handleScroll = () => {
-    if (window.scrollY > 20) {
+    if (window.scrollY > 30) {
       setIsVisible(false);
     } else {
       setIsVisible(true);
