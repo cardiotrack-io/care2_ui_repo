@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import TestPlus from "../../assets/test_plus.svg";
-import AppointmentDateIcon from "../../assets/AppointmentIcons/AppointmentDate.svg";
-import AppointmentTimeIcon from "../../assets/AppointmentIcons/AppointmentTime.svg";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import CustomerDetailsForm from "./CustomerDetailsForm";
-import { format } from "date-fns";
 import axios from "axios";
 import PaymentGatewayEndPoints from "../../Constants/PaymentGatewayEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 import Loading from "../Utility/Loading";
 import Header from "../Utility/Header";
+import TimePicker from "../CustomerRegistration/DateTimePop";
 
+dayjs.extend(customParseFormat);
 const Registration = ({
   customerName,
   setCustomerName,
@@ -27,26 +25,20 @@ const Registration = ({
   setCurrentPage,
   customerPhone,
   selectedIndividualList,
-  total,
+  selectedMedicalTestsPackageCost,
   selectedPackageName,
+  selectedMedicalTests,
   paymentStatus,
   setPaymentStatus,
 }) => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [total, setTotal] = useState(selectedMedicalTestsPackageCost);
   const [promocode, setPromocode] = useState("");
   const [discount, setDiscount] = useState(0);
-  const [totalAfterDiscount, setTotalAfterDiscount] = useState(total);
-  const [timeError, setTimeError] = useState(""); // State for time error message
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(selectedMedicalTestsPackageCost);
   const [error, setError] = useState(""); // State for general error messages
   const [isFormValid, setIsFormValid] = useState(false); // Track form validity
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const getFormattedTime = () => {
-    return appointmentTime
-      ? dayjs(appointmentTime, "HH:mm").format("hh:mm A")
-      : "Select time";
-  };
 
   const calculateTotal = () => {
     const newTotal = total - discount;
@@ -62,6 +54,11 @@ const Registration = ({
       setError("Promo Code is Invalid");
     }
     calculateTotal();
+  };
+
+  const handleTimeChange = (time) => {
+    setAppointmentTime(time);
+    console.log(time)
   };
 
   const validateInputs = () => {
@@ -132,7 +129,7 @@ const Registration = ({
   };
 
   const displayCheckout = (amount, orderId) => {
-    const razorpay_key = import.meta.env.VITE_RAZORPAY_KEY
+    const razorpay_key = import.meta.env.VITE_RAZORPAY_KEY;
     const options = {
       key: razorpay_key, // Use your Razorpay test/live key here
       amount: amount,
@@ -181,8 +178,10 @@ const Registration = ({
       .split(" ")
       .map((part, index) => (index === 1 ? part.replace(".", "") : part)) // Remove period from month abbreviation
       .join("-");
-    const formattedTime = dayjs(appointmentTime, "HH:mm").format("HH:mm");
-    console.log(formattedTime);
+      console.log(appointmentTime)
+      const time24hr = dayjs(time, ["HH:mm A"]).format("HH:mm");
+      onTimeChange(time24hr);
+      console.log(time24hr)
     console.log(formattedDate);
     console.log(selectedPackageName);
     const data = {
@@ -262,53 +261,6 @@ const Registration = ({
     });
   }
 
-  const handleTimeChange = (newValue) => {
-    const selectedDate = dayjs(appointmentDate).startOf("day");
-    const selectedTime = selectedDate
-      .hour(newValue.hour())
-      .minute(newValue.minute());
-    const currentTime = dayjs();
-    const startOfDay = selectedDate.hour(8); // 8 AM
-    const endOfDay = selectedDate.hour(22); // 10 PM
-
-    let isValid = false;
-
-    if (selectedDate.isSame(dayjs().startOf("day"))) {
-      // Today: Allow times from current time to 10 PM
-      if (
-        selectedTime.isAfter(currentTime) &&
-        selectedTime.isBefore(endOfDay)
-      ) {
-        isValid = true;
-      }
-    } else {
-      // Any other day: Allow times from 8 AM to 10 PM
-      if (selectedTime.isAfter(startOfDay) && selectedTime.isBefore(endOfDay)) {
-        isValid = true;
-      }
-    }
-
-    if (isValid) {
-      setAppointmentTime(newValue.format("HH:mm"));
-      setTimeError(""); // Clear error if the time is valid
-    } else {
-      setTimeError(
-        "Invalid time selected. Please select a time between 8 AM and 10 PM."
-      ); // Set error message if the time is invalid
-    }
-    setShowTimePicker(false);
-    calculateTotal();
-  };
-
-  const navigateToHomePage = () => {
-    const userConfirmed = window.confirm(
-      "Do you want to navigate to the home page?"
-    );
-    if (userConfirmed) {
-      window.location.href = "/";
-    }
-  };
-
   return (
     <>
       <div className="relative flex flex-col w-full h-screen px-6 items-center">
@@ -316,7 +268,7 @@ const Registration = ({
         <div className="container mt-11">
           <div className="header_container flex justify-center items-center">
             <div className="flex flex-col -space-y-4 slide-in-left">
-              <div className="cardiotrack" onClick={navigateToHomePage}>
+              <div className="cardiotrack">
                 <p className="font-bold text-black cursor-pointer">
                   Cardiotrack
                 </p>
@@ -341,7 +293,7 @@ const Registration = ({
               Appointment Details
             </p>
           </div>
-          <div className="appointment_details_container flex flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-2">
+          {/* <div className="appointment_details_container flex flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-2">
             <div className="appointment_date relative w-full md:w-1/2">
               {showDatePicker ? (
                 <DatePicker
@@ -410,13 +362,41 @@ const Registration = ({
                 <div className="text-red-500 text-sm mt-2">{timeError}</div>
               )}
             </div>
+          </div> */}
+          <div className="appointment_details_container flex flex-row space-x-2 mt-2">
+            <div className="appointment_date relative w-1/2">
+              <DatePicker
+                selected={appointmentDate}
+                onChange={(date) => setAppointmentDate(date)}
+                className="w-full p-2 border text-darkBlue bg-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-darkBlue"
+                minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // Today as minDate
+                maxDate={
+                  new Date(new Date().setDate(new Date().getDate() + 15))
+                } // 15 days from today as maxDate
+                placeholderText="Select Date"
+                dateFormat="dd-MM-yyyy" // Format the date as DD-MM-YYYY
+                popperModifiers={{
+                  preventOverflow: {
+                    enabled: true,
+                    boundariesElement: 'viewport',
+                  },
+                  offset: {
+                    enabled: true,
+                    offset: '5, 10', // Adjust the offset as needed
+                  },
+                }}
+              />
+            </div>
+            <div className="appointment_time w-1/2">
+              <TimePicker appointmentDate={appointmentDate} onTimeChange={handleTimeChange}/>
+            </div>
           </div>
           <div className="details_container mt-6">
-            <div className="details_title">
+            {/* <div className="details_title">
               <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
                 Your Details
               </p>
-            </div>
+            </div> */}
             <div className="customer_form_container mt-4">
               <CustomerDetailsForm
                 customerName={customerName}
@@ -429,10 +409,7 @@ const Registration = ({
           </div>
         </div>
         <div className="container mt-5">
-          <div className="flex justify-start">
-            <p className="text-darkBlue text-sm font-semibold">Your Tests</p>
-          </div>
-          <div className="flex flex-col md:flex-row md:flex-wrap py-4 px-2 rounded-md bg-blue-400 bg-opacity-20 space-y-2 md:space-y-0">
+          {/* <div className="flex flex-col md:flex-row md:flex-wrap py-4 px-2 rounded-md bg-blue-400 bg-opacity-20 space-y-2 md:space-y-0">
             {selectedIndividualList.map((test, index) => (
               <div
                 key={index}
@@ -441,9 +418,8 @@ const Registration = ({
                 {test}
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
-
         <div className="promocode_container mt-6">
           <div className="promocode_title">
             <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
@@ -467,9 +443,15 @@ const Registration = ({
           </div>
         </div>
         <div className="total_container mt-6">
+        <div className="flex justify-start">
+            <p className="text-darkBlue text-sm font-semibold">{selectedMedicalTests}</p>
+          </div>
           <div className="total_title">
             <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
-              Total Amount
+              Total Amount ₹ {discount > 0 && <span className="line-through">{selectedMedicalTestsPackageCost}</span>}
+              <span className={discount > 0 ? "ml-4" : ""}>₹
+                {discount > 0 ? totalAfterDiscount : selectedMedicalTestsPackageCost}
+              </span>
             </p>
           </div>
           {/* <div className="mt-4 flex justify-between items-center">
@@ -478,14 +460,14 @@ const Registration = ({
               <span className="ml-2">{totalAfterDiscount}</span>
             </p>
           </div> */}
-          <div className="mt-4 flex justify-between items-center">
+          {/* <div className="mt-4 flex justify-between items-center">
             <p className="text-darkBlue text-md font-bold">
-              {discount > 0 && <span className="line-through">{total}</span>}
+              {discount > 0 && <span className="line-through">{selectedMedicalTestsPackageCost}</span>}
               <span className={discount > 0 ? "ml-2" : ""}>
-                {discount > 0 ? totalAfterDiscount : total}
+                {discount > 0 ? totalAfterDiscount : selectedMedicalTestsPackageCost}
               </span>
             </p>
-          </div>
+          </div> */}
         </div>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         {loading && <Loading />}

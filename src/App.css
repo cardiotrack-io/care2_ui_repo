@@ -4,3 +4,12 @@
   text-align: center;
   height: 90vh;
 }
+.react-datepicker-popper {
+  z-index: 1000; /* Ensure it appears above other elements */
+  margin-left: 40px !important; /* Ensure some margin on the left */
+}
+
+.react-datepicker__triangle {
+  left: 50px !important; /* Adjust the triangle position */
+}
+

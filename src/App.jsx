@@ -106,6 +106,7 @@ function App() {
         return (
           <Registration
             selectedIndividualList={selectedIndividualList}
+            selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
             total={total}
             setTotal={setTotal}
             customerName={customerName}
@@ -119,6 +120,7 @@ function App() {
             setAppointmentTime={setAppointmentTime}
             setCurrentPage={setCurrentPage}
             selectedPackageName = {selectedPackageName}
+            selectedMedicalTests = {selectedMedicalTests}
             paymentStatus={paymentStatus}
             setPaymentStatus={setPaymentStatus}
           />
