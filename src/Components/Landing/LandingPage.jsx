@@ -1,5 +1,6 @@
 import "./LandingPage.css";
 import Header from "../Utility/Header";
+import React, { useEffect } from 'react';
 
 function LandingPage({ setCurrentPage }) {
   function handleGetStarted() {
