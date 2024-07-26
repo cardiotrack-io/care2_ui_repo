@@ -1,8 +1,8 @@
 FROM node:20
 
-ARG ENVIRONMENT
-ENV ENVIRONMENT $ENVIRONMENT
-CMD echo $ENVIRONMENT
+ARG NPM_MODE
+ENV NPM_MODE $NPM_MODE
+RUN echo $NPM_MODE
 
 WORKDIR /app
 COPY package*.json ./
@@ -12,7 +12,7 @@ COPY ./.env.development /app/
 COPY ./.env.production /app/
 EXPOSE 4000
 
-CMD [ "npm", "run", "dev" ]
+CMD ["sh", "-c", "npm run $NPM_MODE"]
 
 # FROM node:18-alpine
 
