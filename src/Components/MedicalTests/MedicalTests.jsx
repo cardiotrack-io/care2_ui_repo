@@ -9,6 +9,7 @@ import axios from "axios";
 import MedicalTestApiEndPoints from "../../Constants/MedicalTestEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 import DisplayTestList from "./TestList";
+import Header from "../Utility/Header";
 
 const MedicalPackageIcons = [Lungs, Ovary, Heart, FullBody];
 
@@ -36,6 +37,7 @@ const MedicalTests = ({
   const [localTestSelect, setLocalTestSelect] = useState(null);
   const [individualTestList, setIndividualTestList] = useState(null);
   const [packageCost, setPackageCost] = useState(null);
+  const [systemCost, setSystemCost] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleMainPackageSelect = (packageName) => {
@@ -47,6 +49,7 @@ const MedicalTests = ({
       console.log(selectedPackage.Cardiotrack_Package_Name);
       console.log(selectedPackageName);
       setPackageCost(selectedPackage.Core_Package_Rate_Negotiated);
+      calculateSystemAmount(selectedPackage.Core_Package_Rate_Negotiated); 
       setSelectedMedicalTests(packageName);
       setSelectedMedicalTestIndividualList(selectedPackage.Package_Details);
       setSelectedMedicalTestsPackageCost(selectedPackage.Core_Package_Rate_Negotiated);
@@ -60,6 +63,13 @@ const MedicalTests = ({
       console.log(setLocalTestSelect);
       setErrorMessage(""); // Clear any existing error message
     }
+  };
+
+  const calculateSystemAmount = (cost) => {
+    const discount = (cost * 30) / 100;
+    const beforedDiscount= parseFloat(cost) + parseFloat(discount);
+    setSystemCost(beforedDiscount); // Keep 2 decimal places
+    console.log(beforedDiscount,discount)
   };
 
   const fetchTestBundle = async () => {
@@ -107,6 +117,7 @@ const MedicalTests = ({
 
   return (
     <div className="relative flex flex-col w-full h-screen px-6 items-center">
+      <Header />
       <div className="container mt-11">
         <div className="header_container flex justify-center items-center">
           <div className="flex flex-col -space-y-4 slide-in-left">
@@ -153,7 +164,7 @@ const MedicalTests = ({
       )}
       {individualTestList && (
         <div className="test_container py-10">
-          <DisplayTestList individualTestList={individualTestList} packageCost={packageCost} />
+          <DisplayTestList individualTestList={individualTestList} packageCost={packageCost} selectedMedicalTests={selectedMedicalTests} systemCost={systemCost} />
         </div>
       )}
       {errorMessage && (
@@ -166,7 +177,7 @@ const MedicalTests = ({
           className="w-full starting_button bg-darkGray lg:w-1/4"
           onClick={() => {
             if (individualTestList && individualTestList.length > 0) {
-              setCurrentPage("medicalTestsPicker");
+              setCurrentPage("registration");
             } else {
               setErrorMessage("Please select a package to proceed.");
             }

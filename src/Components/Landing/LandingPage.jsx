@@ -1,15 +1,25 @@
 import "./LandingPage.css";
+import Header from "../Utility/Header";
+import React, { useEffect } from 'react';
 
 function LandingPage({ setCurrentPage }) {
   function handleGetStarted() {
     setCurrentPage("login");
   }
 
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to top on component mount
+  }, []);
+
   return (
-    <div className="relative flex flex-col items-center justify-center w-full h-screen">
-      <div className="flip-in-hor-top absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/3">
+    <div className="relative flex flex-col items-center justify-center w-full h-screen overflow-hidden">
+      <Header />
+      <div 
+        className="flip-in-hor-top absolute flex flex-col items-center -space-y-4 transform -translate-y-1/2 top-1/3" 
+        style={{ top: 'calc(33.333% - 50px)' }}
+      >
         <div className="cardiotrack">
-          <p className="font-bold text-black ">Cardiotrack</p>
+          <p className="font-bold text-black">Cardiotrack</p>
         </div>
         <div className="flex justify-center space-x-1 care-medical-test">
           <div className="care ">
@@ -22,8 +32,11 @@ function LandingPage({ setCurrentPage }) {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-10 left-0 w-full pb-8 text-center">
-        <div className="warning mb-1">
+      <div 
+        className="absolute bottom-10 left-0 w-full pb-8 text-center" 
+        style={{ bottom: 'calc(2.5rem + 50px)' }}
+      >
+        <div className="warning m-1">
           <p className="text-black">
             *by clicking on “Get Started” you have agreed to our T&C which are
             going to be applied

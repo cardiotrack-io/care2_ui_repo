@@ -7,6 +7,7 @@ import qs from "qs";
 import UserApiEndPoints from "../../Constants/UserEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 import { data } from "autoprefixer";
+import Header from "../Utility/Header";
 
 function LoginPage({
   customerPhone,
@@ -144,6 +145,7 @@ function LoginPage({
 
   return (
     <div className="relative flex flex-col w-full h-screen px-6 ">
+      <Header />
       <div className="container mt-11">
         <div className="flex flex-col -space-y-4 slide-in-left mt-5">
           <div className="cardiotrack slide-in-left">

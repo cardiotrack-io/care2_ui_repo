@@ -2,6 +2,7 @@ import React from "react";
 import TestPlus from "../../assets/test_plus.svg";
 import dayjs from "dayjs";
 import { format } from "date-fns";
+import Header from "../Utility/Header";
 
 const ThankYouPage = ({
   customerName,
@@ -14,6 +15,7 @@ const ThankYouPage = ({
 }) => {
   return (
     <div className="container mt-11 px-6">
+      <Header />
       <div className="header_container flex justify-center items-center">
         <div className="flex flex-col -space-y-4 slide-in-left">
           <div className="cardiotrack">
