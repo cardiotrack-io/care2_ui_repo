@@ -208,3 +208,7 @@
     opacity: 1;
   }
 }
+
+.placeholder-darkBlue::placeholder {
+        @apply text-darkBlue; /* Apply Tailwind class to placeholder */
+      }
