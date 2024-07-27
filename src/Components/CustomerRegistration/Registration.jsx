@@ -447,10 +447,10 @@ const Registration = ({
         <div className="flex justify-start">
             <p className="text-darkBlue text-sm font-semibold">{selectedMedicalTests}</p>
           </div>
-          <div className="total_title">
+          <div className="total_title mt-6">
             <p className="drop-shadow-md text-darkBlue text-left text-xs font-semibold">
-              Total Amount  {discount > 0 && <span className="line-through">₹{selectedMedicalTestsPackageCost}</span>}
-              <span className={discount > 0 ? "ml-4 text-base" : ""}>₹
+              Total Amount  {discount > 0 && <><span className="line-through ml-3">₹{selectedMedicalTestsPackageCost}</span> </>}
+              <span className={discount > 0 ? "ml-7 text-base" : "ml-7 text-base"}>₹
                 {discount > 0 ? totalAfterDiscount : selectedMedicalTestsPackageCost}
               </span>
             </p>

@@ -14,14 +14,14 @@ const TimePicker = ({ appointmentDate, onTimeChange }) => {
     const selectedDate = new Date(appointmentDate);
     const isToday = selectedDate.toDateString() === currentTime.toDateString();
 
-    for (let hour = 8; hour <= 25; hour++) {
+    for (let hour = 6; hour <= 22; hour++) {
       const formattedHour = hour > 12 ? hour - 12 : hour;
       const period = hour >= 12 ? "PM" : "AM";
       if (!isToday || (isToday && hour > currentTime.getHours())) {
         times.push(`${formattedHour}:00 ${period}`);
       }
       if (
-        hour !== 25 &&
+        hour !== 23 &&
         (!isToday || (isToday && hour > currentTime.getHours()))
       ) {
         times.push(`${formattedHour}:30 ${period}`);
