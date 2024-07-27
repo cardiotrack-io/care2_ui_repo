@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+// import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { faHeadset } from '@fortawesome/free-solid-svg-icons';
 import './Header.css'; // Import the CSS file for styling
 
 const Header = () => {
@@ -25,7 +26,7 @@ const Header = () => {
   return (
     <div className={`header-container ${isVisible ? 'visible' : 'hidden'}`}>
        <a href="https://wa.me/+918951217111" className="whatsapp-link" target="_blank" rel="noopener noreferrer">
-        <FontAwesomeIcon icon={faWhatsapp} className="whatsapp-icon" />
+        <FontAwesomeIcon icon={faHeadset} className="whatsapp-icon" />
         <span className="company-number">+918951217111</span>
       </a>
     </div>
