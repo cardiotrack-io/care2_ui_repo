@@ -294,76 +294,6 @@ const Registration = ({
               Appointment Details
             </p>
           </div>
-          {/* <div className="appointment_details_container flex flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-2">
-            <div className="appointment_date relative w-full md:w-1/2">
-              {showDatePicker ? (
-                <DatePicker
-                  selected={appointmentDate}
-                  onChange={(date) => {
-                    setAppointmentDate(date);
-                    setShowDatePicker(false);
-                  }}
-                  className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  inline
-                  minDate={new Date()} // Today as minDate
-                  maxDate={
-                    new Date(new Date().setDate(new Date().getDate() + 15))
-                  } // 15 days from today as maxDate
-                />
-              ) : (
-                <div onClick={() => setShowDatePicker(true)}>
-                  <img
-                    src={AppointmentDateIcon}
-                    alt="appointment_date_icon"
-                    className="w-full h-full cursor-pointer"
-                  />
-                  <div className="absolute top-3 left-0 w-full h-full px-6 flex items-center justify-center">
-                    <p className="text-darkBlue text-md font-bold">
-                      {appointmentDate
-                        ? format(appointmentDate, "dd-MM-yy")
-                        : "Select date"}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="appointment_time relative w-full md:w-1/2 text-black">
-              {showTimePicker ? (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <MobileTimePicker
-                    open={showTimePicker}
-                    onClose={() => setShowTimePicker(false)}
-                    value={
-                      appointmentTime ? dayjs(appointmentTime, "HH:mm") : null
-                    }
-                    onAccept={handleTimeChange}
-                    slotProps={{
-                      textField: {
-                        variant: "outlined",
-                        fullWidth: true,
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
-              ) : (
-                <div onClick={() => setShowTimePicker(true)}>
-                  <img
-                    src={AppointmentTimeIcon}
-                    alt="appointment_time_icon"
-                    className="w-full h-full cursor-pointer"
-                  />
-                  <div className="absolute top-3 left-0 w-full h-full px-7 flex items-center justify-center">
-                    <p className="text-darkBlue text-md font-bold">
-                      {getFormattedTime()}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {timeError && (
-                <div className="text-red-500 text-sm mt-2">{timeError}</div>
-              )}
-            </div>
-          </div> */}
           <div className="appointment_details_container flex flex-row space-x-2 mt-2">
             <div className="appointment_date relative w-1/2">
               <DatePicker
@@ -393,11 +323,6 @@ const Registration = ({
             </div>
           </div>
           <div className="details_container mt-6">
-            {/* <div className="details_title">
-              <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
-                Your Details
-              </p>
-            </div> */}
             <div className="customer_form_container mt-4">
               <CustomerDetailsForm
                 customerName={customerName}
@@ -408,18 +333,6 @@ const Registration = ({
               />
             </div>
           </div>
-        </div>
-        <div className="container mt-5">
-          {/* <div className="flex flex-col md:flex-row md:flex-wrap py-4 px-2 rounded-md bg-blue-400 bg-opacity-20 space-y-2 md:space-y-0">
-            {selectedIndividualList.map((test, index) => (
-              <div
-                key={index}
-                className="w-full md:w-1/2 text-sm font-semibold text-darkBlue md:py-2"
-              >
-                {test}
-              </div>
-            ))}
-          </div> */}
         </div>
         <div className="promocode_container mt-6">
           <div className="promocode_title">
@@ -455,34 +368,10 @@ const Registration = ({
               </span>
             </p>
           </div>
-          {/* <div className="mt-4 flex justify-between items-center">
-            <p className="text-darkBlue text-md font-bold">
-              <span className="line-through">{total}</span>
-              <span className="ml-2">{totalAfterDiscount}</span>
-            </p>
-          </div> */}
-          {/* <div className="mt-4 flex justify-between items-center">
-            <p className="text-darkBlue text-md font-bold">
-              {discount > 0 && <span className="line-through">{selectedMedicalTestsPackageCost}</span>}
-              <span className={discount > 0 ? "ml-2" : ""}>
-                {discount > 0 ? totalAfterDiscount : selectedMedicalTestsPackageCost}
-              </span>
-            </p>
-          </div> */}
         </div>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         {loading && <Loading />}
         <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
-          {/* <button
-            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
-            onClick={() => {
-              // Mark as COD
-              setPaymentStatus("COD");
-              navigateToThankyouPage();
-            }}
-          >
-            <p className="font-light text-white text-center">Pay Later</p>
-          </button> */}
           <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
             onClick={loadRazorpay}
