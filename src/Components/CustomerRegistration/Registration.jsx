@@ -49,6 +49,7 @@ const Registration = ({
   const applyPromocode = () => {
     if (promocode === "SAVE10") {
       setDiscount(10); // Example discount for a specific promocode
+      setError("")
     } else {
       setDiscount(0);
       setError("Promo Code is Invalid");
@@ -447,9 +448,9 @@ const Registration = ({
             <p className="text-darkBlue text-sm font-semibold">{selectedMedicalTests}</p>
           </div>
           <div className="total_title">
-            <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
-              Total Amount ₹ {discount > 0 && <span className="line-through">{selectedMedicalTestsPackageCost}</span>}
-              <span className={discount > 0 ? "ml-4" : ""}>₹
+            <p className="drop-shadow-md text-darkBlue text-left text-xs font-semibold">
+              Total Amount  {discount > 0 && <span className="line-through">₹{selectedMedicalTestsPackageCost}</span>}
+              <span className={discount > 0 ? "ml-4 text-base" : ""}>₹
                 {discount > 0 ? totalAfterDiscount : selectedMedicalTestsPackageCost}
               </span>
             </p>
