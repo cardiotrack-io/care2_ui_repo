@@ -250,6 +250,17 @@ const Registration = ({
     }
   }
 
+  const CustomInput = React.forwardRef(({ value, onClick }, ref) => (
+    <button
+      className="w-full p-2 border text-darkBlue bg-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-darkBlue"
+      onClick={onClick}
+      onKeyDown={(e) => e.preventDefault()} // Prevent manual input
+      ref={ref}
+    >
+      {value || "Select Date"}
+    </button>
+  ));
+  
   function navigateToThankyouPage() {
     setCurrentPage("thankYou", {
       customerName,
@@ -299,7 +310,7 @@ const Registration = ({
               <DatePicker
                 selected={appointmentDate}
                 onChange={(date) => setAppointmentDate(date)}
-                className="w-full p-2 border text-darkBlue bg-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-darkBlue"
+                // className="w-full p-2 border text-darkBlue bg-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-darkBlue"
                 minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // Today as minDate
                 maxDate={
                   new Date(new Date().setDate(new Date().getDate() + 15))
@@ -316,6 +327,7 @@ const Registration = ({
                     offset: '5, 10', // Adjust the offset as needed
                   },
                 }}
+                customInput={<CustomInput />}
               />
             </div>
             <div className="appointment_time w-1/2">
