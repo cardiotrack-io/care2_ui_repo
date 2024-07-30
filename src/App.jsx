@@ -128,16 +128,14 @@ function App() {
         case "thankYou":
         return (
         <ThankYouPage
-        customerName={customerName}
-        customerAddress={customerAddress}
-        appointmentDate={appointmentDate}
-        appointmentTime={appointmentTime}
-        total={total}
-        selectedIndividualList={selectedIndividualList}
+        // customerName={customerName}
+        // customerAddress={customerAddress}
+        // appointmentDate={appointmentDate}
+        // appointmentTime={appointmentTime}
+        // total={total}
+        selectedMedicalTests={selectedMedicalTests}
         // selectedIndividualListCost={selectedIndividualListCost}
         // setSelectedIndividualListCost={setSelectedIndividualListCost}
-        paymentStatus={paymentStatus}
-        setPaymentStatus={setPaymentStatus}
       />
       );
       default:

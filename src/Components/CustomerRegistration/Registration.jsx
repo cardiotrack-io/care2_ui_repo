@@ -28,8 +28,6 @@ const Registration = ({
   selectedMedicalTestsPackageCost,
   selectedPackageName,
   selectedMedicalTests,
-  paymentStatus,
-  setPaymentStatus,
 }) => {
   const [total, setTotal] = useState(selectedMedicalTestsPackageCost);
   const [promocode, setPromocode] = useState("");
@@ -99,7 +97,7 @@ const Registration = ({
   const generateOrder = async () => {
     try {
       const requestData = {
-        amount: Math.floor(total) * 100, // Amount in paise
+        amount: Math.floor(totalAfterDiscount) * 100, // Amount in paise
         currency: "INR",
         receipt: "test-order",
       };
@@ -180,9 +178,9 @@ const Registration = ({
       .map((part, index) => (index === 1 ? part.replace(".", "") : part)) // Remove period from month abbreviation
       .join("-");
       console.log(appointmentTime)
-      const time24hr = dayjs(time, ["HH:mm A"]).format("HH:mm");
-      onTimeChange(time24hr);
-      console.log(time24hr)
+      // const time24hr = dayjs(time, ["HH:mm A"]).format("HH:mm");
+      // onTimeChange(time24hr);
+      // console.log(time24hr)
     console.log(formattedDate);
     console.log(selectedPackageName);
     const data = {
@@ -206,7 +204,7 @@ const Registration = ({
         Payment_Order_ID: paymentData.order_id,
         Payment_ID: paymentData.payment_id,
         Payment_Signature: paymentData.signature,
-        Amount: total.toString(),
+        Amount: totalAfterDiscount.toString(),
       },
     };
     console.log("Order ID:", paymentData.order_id);
@@ -230,7 +228,6 @@ const Registration = ({
       if (response.status === 200) {
         console.log("Response Data:", response);
         setLoading(false);
-        setPaymentStatus("Paid");
         navigateToThankyouPage();
       }
     } catch (error) {
@@ -260,16 +257,10 @@ const Registration = ({
       {value || "Select Date"}
     </button>
   ));
-  
+
   function navigateToThankyouPage() {
     setCurrentPage("thankYou", {
-      customerName,
-      customerAddress,
-      appointmentDate,
-      appointmentTime,
-      total: totalAfterDiscount,
-      paymentStatus: paymentStatus,
-      selectedIndividualList,
+      selectedMedicalTests,
     });
   }
 

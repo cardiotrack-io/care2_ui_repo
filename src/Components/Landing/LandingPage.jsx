@@ -38,8 +38,10 @@ function LandingPage({ setCurrentPage }) {
       >
         <div className="warning m-1">
           <p className="text-black">
-            *by clicking on “Get Started” you have agreed to our T&C which are
-            going to be applied
+            *By clicking on “Get Started” you agree to our T&C  
+            <a href="https://www.dropbox.com/scl/fi/ng4sqm70dvubja274f5yr/ct-Terms-Conditions.pdf?rlkey=v4v0irjr4aqr9d5kzrwp2jva3&e=1&st=tryaa605&dl=0"
+          target="_blank" className="text-blue-500"
+        >*** click here ***.</a> 
           </p>
         </div>
         <div className="w-full starting_button scale-in-ver-top">

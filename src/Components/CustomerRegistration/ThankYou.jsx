@@ -1,17 +1,9 @@
 import React from "react";
 import TestPlus from "../../assets/test_plus.svg";
-import dayjs from "dayjs";
-import { format } from "date-fns";
 import Header from "../Utility/Header";
 
 const ThankYouPage = ({
-  customerName,
-  customerAddress,
-  appointmentDate,
-  appointmentTime,
-  total,
-  selectedIndividualList,
-  paymentStatus,
+  selectedMedicalTests,
 }) => {
   return (
     <div className="container mt-11 px-6">
@@ -37,11 +29,14 @@ const ThankYouPage = ({
         </div>
       </div>
       <div className="mt-6 text-center">
-        <h2 className="text-2xl font-bold text-darkBlue">Thank You!</h2>
+        <h2 className="text-2xl font-bold text-darkBlue slide-in-left">Congratulations.</h2>
         <p className="text-md text-darkBlue mt-2">
-          Your appointment is confirmed.
+          Your appointment for {selectedMedicalTests} is confirmed.
         </p>
-        <div className="mt-6">
+        <p className="text-sm text-darkBlue mt-4">
+          You will get updates in WhatsApp. Our team will contact you shortly.
+        </p>
+        {/* <div className="mt-6">
           <h3 className="text-xl font-semibold text-darkBlue">
             Appointment Details
           </h3>
@@ -53,7 +48,6 @@ const ThankYouPage = ({
             {customerAddress.district}, {customerAddress.state},{" "}
             {customerAddress.pincode}
           </p>
-          {/* {customerAddress.addressLine2}, */}
           <p className="text-md text-darkBlue mt-2">
             <strong>Date:</strong>{" "}
             {appointmentDate ? format(appointmentDate, "dd-MM-yy") : ""}
@@ -70,7 +64,7 @@ const ThankYouPage = ({
           <p className="text-md text-darkBlue mt-2">
             <strong>Payment Status:</strong> {paymentStatus}
           </p>
-        </div>
+        </div> */}
         {/* <div className="mt-6">
           <button
             className="px-4 py-2 bg-darkGray text-white rounded-lg"
@@ -79,21 +73,11 @@ const ThankYouPage = ({
             Go to Homepage
           </button>
         </div> */}
-        <div className="container mt-5">
+        {/* <div className="container mt-5">
           <div className="flex justify-center text-2xl">
-            <p className="text-darkBlue text-md font-bold">Your Tests</p>
+            <p className="text-darkBlue text-md font-bold">{selectedMedicalTests}</p>
           </div>
-          <div className="flex flex-col md:flex-row md:flex-wrap py-4 px-2 rounded-md bg-blue-400 bg-opacity-20 space-y-2 md:space-y-0">
-            {selectedIndividualList.map((test, index) => (
-              <div
-                key={index}
-                className="w-full md:w-1/2 text-sm font-semibold text-darkBlue md:py-2"
-              >
-                {test}
-              </div>
-            ))}
-          </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
