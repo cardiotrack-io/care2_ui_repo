@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const OTPSize = 6;
 
@@ -30,6 +30,23 @@ const OTPInput = ({ otp, setOtp, size = OTPSize }) => {
             inputRefs.current[index - 1].focus();
         }
     };
+
+    useEffect(() => {
+        if ('OTPCredential' in window) {
+            navigator.credentials
+                .get({ otp: { transport: ['sms'] } })
+                .then((otp) => {
+                    const receivedOtp = otp.code;
+                    setOtp(receivedOtp.split(''));
+                    receivedOtp.split('').forEach((digit, index) => {
+                        inputRefs.current[index].value = digit;
+                    });
+                })
+                .catch((err) => {
+                    console.log('Error retrieving OTP', err);
+                });
+        }
+    }, [setOtp]);
 
     return (
         <div style={{ display: "flex", gap: "10px" }}>
