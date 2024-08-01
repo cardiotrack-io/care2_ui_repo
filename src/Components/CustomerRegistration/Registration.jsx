@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import TestPlus from "../../assets/test_plus.svg";
-import AppointmentDateIcon from "../../assets/AppointmentIcons/AppointmentDate.svg";
-import AppointmentTimeIcon from "../../assets/AppointmentIcons/AppointmentTime.svg";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { LocalizationProvider, MobileTimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import CustomerDetailsForm from "./CustomerDetailsForm";
-import { format } from "date-fns";
 import axios from "axios";
 import PaymentGatewayEndPoints from "../../Constants/PaymentGatewayEndPoints";
 import AuthorizationKey from "../../Constants/AuthorizationKey";
 import Loading from "../Utility/Loading";
 import Header from "../Utility/Header";
+import TimePicker from "../CustomerRegistration/DateTimePop";
 
+dayjs.extend(customParseFormat);
 const Registration = ({
   customerName,
   setCustomerName,
@@ -27,26 +25,18 @@ const Registration = ({
   setCurrentPage,
   customerPhone,
   selectedIndividualList,
-  total,
+  selectedMedicalTestsPackageCost,
   selectedPackageName,
-  paymentStatus,
-  setPaymentStatus,
+  selectedMedicalTests,
 }) => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [total, setTotal] = useState(selectedMedicalTestsPackageCost);
   const [promocode, setPromocode] = useState("");
   const [discount, setDiscount] = useState(0);
-  const [totalAfterDiscount, setTotalAfterDiscount] = useState(total);
-  const [timeError, setTimeError] = useState(""); // State for time error message
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(selectedMedicalTestsPackageCost);
   const [error, setError] = useState(""); // State for general error messages
   const [isFormValid, setIsFormValid] = useState(false); // Track form validity
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const getFormattedTime = () => {
-    return appointmentTime
-      ? dayjs(appointmentTime, "HH:mm").format("hh:mm A")
-      : "Select time";
-  };
 
   const calculateTotal = () => {
     const newTotal = total - discount;
@@ -57,11 +47,17 @@ const Registration = ({
   const applyPromocode = () => {
     if (promocode === "SAVE10") {
       setDiscount(10); // Example discount for a specific promocode
+      setError("")
     } else {
       setDiscount(0);
       setError("Promo Code is Invalid");
     }
     calculateTotal();
+  };
+
+  const handleTimeChange = (time) => {
+    setAppointmentTime(time);
+    console.log(time)
   };
 
   const validateInputs = () => {
@@ -101,7 +97,7 @@ const Registration = ({
   const generateOrder = async () => {
     try {
       const requestData = {
-        amount: Math.floor(total) * 100, // Amount in paise
+        amount: Math.floor(totalAfterDiscount) * 100, // Amount in paise
         currency: "INR",
         receipt: "test-order",
       };
@@ -132,7 +128,7 @@ const Registration = ({
   };
 
   const displayCheckout = (amount, orderId) => {
-    const razorpay_key = import.meta.env.VITE_RAZORPAY_KEY
+    const razorpay_key = import.meta.env.VITE_RAZORPAY_KEY;
     const options = {
       key: razorpay_key, // Use your Razorpay test/live key here
       amount: amount,
@@ -181,8 +177,10 @@ const Registration = ({
       .split(" ")
       .map((part, index) => (index === 1 ? part.replace(".", "") : part)) // Remove period from month abbreviation
       .join("-");
-    const formattedTime = dayjs(appointmentTime, "HH:mm").format("HH:mm");
-    console.log(formattedTime);
+      console.log(appointmentTime)
+      // const time24hr = dayjs(time, ["HH:mm A"]).format("HH:mm");
+      // onTimeChange(time24hr);
+      // console.log(time24hr)
     console.log(formattedDate);
     console.log(selectedPackageName);
     const data = {
@@ -206,7 +204,7 @@ const Registration = ({
         Payment_Order_ID: paymentData.order_id,
         Payment_ID: paymentData.payment_id,
         Payment_Signature: paymentData.signature,
-        Amount: total.toString(),
+        Amount: totalAfterDiscount.toString(),
       },
     };
     console.log("Order ID:", paymentData.order_id);
@@ -230,7 +228,6 @@ const Registration = ({
       if (response.status === 200) {
         console.log("Response Data:", response);
         setLoading(false);
-        setPaymentStatus("Paid");
         navigateToThankyouPage();
       }
     } catch (error) {
@@ -250,64 +247,22 @@ const Registration = ({
     }
   }
 
+  const CustomInput = React.forwardRef(({ value, onClick }, ref) => (
+    <button
+      className="w-full p-2 border text-darkBlue bg-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-darkBlue"
+      onClick={onClick}
+      onKeyDown={(e) => e.preventDefault()} // Prevent manual input
+      ref={ref}
+    >
+      {value || "Select Date"}
+    </button>
+  ));
+
   function navigateToThankyouPage() {
     setCurrentPage("thankYou", {
-      customerName,
-      customerAddress,
-      appointmentDate,
-      appointmentTime,
-      total: totalAfterDiscount,
-      paymentStatus: paymentStatus,
-      selectedIndividualList,
+      selectedMedicalTests,
     });
   }
-
-  const handleTimeChange = (newValue) => {
-    const selectedDate = dayjs(appointmentDate).startOf("day");
-    const selectedTime = selectedDate
-      .hour(newValue.hour())
-      .minute(newValue.minute());
-    const currentTime = dayjs();
-    const startOfDay = selectedDate.hour(8); // 8 AM
-    const endOfDay = selectedDate.hour(22); // 10 PM
-
-    let isValid = false;
-
-    if (selectedDate.isSame(dayjs().startOf("day"))) {
-      // Today: Allow times from current time to 10 PM
-      if (
-        selectedTime.isAfter(currentTime) &&
-        selectedTime.isBefore(endOfDay)
-      ) {
-        isValid = true;
-      }
-    } else {
-      // Any other day: Allow times from 8 AM to 10 PM
-      if (selectedTime.isAfter(startOfDay) && selectedTime.isBefore(endOfDay)) {
-        isValid = true;
-      }
-    }
-
-    if (isValid) {
-      setAppointmentTime(newValue.format("HH:mm"));
-      setTimeError(""); // Clear error if the time is valid
-    } else {
-      setTimeError(
-        "Invalid time selected. Please select a time between 8 AM and 10 PM."
-      ); // Set error message if the time is invalid
-    }
-    setShowTimePicker(false);
-    calculateTotal();
-  };
-
-  const navigateToHomePage = () => {
-    const userConfirmed = window.confirm(
-      "Do you want to navigate to the home page?"
-    );
-    if (userConfirmed) {
-      window.location.href = "/";
-    }
-  };
 
   return (
     <>
@@ -316,7 +271,7 @@ const Registration = ({
         <div className="container mt-11">
           <div className="header_container flex justify-center items-center">
             <div className="flex flex-col -space-y-4 slide-in-left">
-              <div className="cardiotrack" onClick={navigateToHomePage}>
+              <div className="cardiotrack">
                 <p className="font-bold text-black cursor-pointer">
                   Cardiotrack
                 </p>
@@ -341,82 +296,36 @@ const Registration = ({
               Appointment Details
             </p>
           </div>
-          <div className="appointment_details_container flex flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 mt-2">
-            <div className="appointment_date relative w-full md:w-1/2">
-              {showDatePicker ? (
-                <DatePicker
-                  selected={appointmentDate}
-                  onChange={(date) => {
-                    setAppointmentDate(date);
-                    setShowDatePicker(false);
-                  }}
-                  className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  inline
-                  minDate={new Date()} // Today as minDate
-                  maxDate={
-                    new Date(new Date().setDate(new Date().getDate() + 15))
-                  } // 15 days from today as maxDate
-                />
-              ) : (
-                <div onClick={() => setShowDatePicker(true)}>
-                  <img
-                    src={AppointmentDateIcon}
-                    alt="appointment_date_icon"
-                    className="w-full h-full cursor-pointer"
-                  />
-                  <div className="absolute top-3 left-0 w-full h-full px-6 flex items-center justify-center">
-                    <p className="text-darkBlue text-md font-bold">
-                      {appointmentDate
-                        ? format(appointmentDate, "dd-MM-yy")
-                        : "Select date"}
-                    </p>
-                  </div>
-                </div>
-              )}
+          <div className="appointment_details_container flex flex-row space-x-2 mt-2">
+            <div className="appointment_date relative w-1/2">
+              <DatePicker
+                selected={appointmentDate}
+                onChange={(date) => setAppointmentDate(date)}
+                // className="w-full p-2 border text-darkBlue bg-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-darkBlue"
+                minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // Today as minDate
+                maxDate={
+                  new Date(new Date().setDate(new Date().getDate() + 15))
+                } // 15 days from today as maxDate
+                placeholderText="Select Date"
+                dateFormat="dd-MM-yyyy" // Format the date as DD-MM-YYYY
+                popperModifiers={{
+                  preventOverflow: {
+                    enabled: true,
+                    boundariesElement: 'viewport',
+                  },
+                  offset: {
+                    enabled: true,
+                    offset: '5, 10', // Adjust the offset as needed
+                  },
+                }}
+                customInput={<CustomInput />}
+              />
             </div>
-            <div className="appointment_time relative w-full md:w-1/2 text-black">
-              {showTimePicker ? (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <MobileTimePicker
-                    open={showTimePicker}
-                    onClose={() => setShowTimePicker(false)}
-                    value={
-                      appointmentTime ? dayjs(appointmentTime, "HH:mm") : null
-                    }
-                    onAccept={handleTimeChange}
-                    slotProps={{
-                      textField: {
-                        variant: "outlined",
-                        fullWidth: true,
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
-              ) : (
-                <div onClick={() => setShowTimePicker(true)}>
-                  <img
-                    src={AppointmentTimeIcon}
-                    alt="appointment_time_icon"
-                    className="w-full h-full cursor-pointer"
-                  />
-                  <div className="absolute top-3 left-0 w-full h-full px-7 flex items-center justify-center">
-                    <p className="text-darkBlue text-md font-bold">
-                      {getFormattedTime()}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {timeError && (
-                <div className="text-red-500 text-sm mt-2">{timeError}</div>
-              )}
+            <div className="appointment_time w-1/2">
+              <TimePicker appointmentDate={appointmentDate} onTimeChange={handleTimeChange}/>
             </div>
           </div>
           <div className="details_container mt-6">
-            <div className="details_title">
-              <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
-                Your Details
-              </p>
-            </div>
             <div className="customer_form_container mt-4">
               <CustomerDetailsForm
                 customerName={customerName}
@@ -428,22 +337,6 @@ const Registration = ({
             </div>
           </div>
         </div>
-        <div className="container mt-5">
-          <div className="flex justify-start">
-            <p className="text-darkBlue text-sm font-semibold">Your Tests</p>
-          </div>
-          <div className="flex flex-col md:flex-row md:flex-wrap py-4 px-2 rounded-md bg-blue-400 bg-opacity-20 space-y-2 md:space-y-0">
-            {selectedIndividualList.map((test, index) => (
-              <div
-                key={index}
-                className="w-full md:w-1/2 text-sm font-semibold text-darkBlue md:py-2"
-              >
-                {test}
-              </div>
-            ))}
-          </div>
-        </div>
-
         <div className="promocode_container mt-6">
           <div className="promocode_title">
             <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
@@ -467,22 +360,14 @@ const Registration = ({
           </div>
         </div>
         <div className="total_container mt-6">
-          <div className="total_title">
-            <p className="drop-shadow-md text-darkBlue text-left text-sm font-semibold">
-              Total Amount
-            </p>
+        <div className="flex justify-start">
+            <p className="text-darkBlue text-sm font-semibold">{selectedMedicalTests}</p>
           </div>
-          {/* <div className="mt-4 flex justify-between items-center">
-            <p className="text-darkBlue text-md font-bold">
-              <span className="line-through">{total}</span>
-              <span className="ml-2">{totalAfterDiscount}</span>
-            </p>
-          </div> */}
-          <div className="mt-4 flex justify-between items-center">
-            <p className="text-darkBlue text-md font-bold">
-              {discount > 0 && <span className="line-through">{total}</span>}
-              <span className={discount > 0 ? "ml-2" : ""}>
-                {discount > 0 ? totalAfterDiscount : total}
+          <div className="total_title mt-6">
+            <p className="drop-shadow-md text-darkBlue text-left text-xs font-semibold">
+              Total Amount  {discount > 0 && <><span className="line-through ml-3">₹{selectedMedicalTestsPackageCost}</span> </>}
+              <span className={discount > 0 ? "ml-7 text-base" : "ml-7 text-base"}>₹
+                {discount > 0 ? totalAfterDiscount : selectedMedicalTestsPackageCost}
               </span>
             </p>
           </div>
@@ -490,16 +375,6 @@ const Registration = ({
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         {loading && <Loading />}
         <div className="relative my-4 py-4 flex flex-row w-11/12 pt-4 text-center justify-center bottom-2 items-center space-x-2">
-          {/* <button
-            className="flex-1 bg-darkGray text-white py-2 rounded-lg"
-            onClick={() => {
-              // Mark as COD
-              setPaymentStatus("COD");
-              navigateToThankyouPage();
-            }}
-          >
-            <p className="font-light text-white text-center">Pay Later</p>
-          </button> */}
           <button
             className="flex-1 bg-darkGray text-white py-2 rounded-lg"
             onClick={loadRazorpay}

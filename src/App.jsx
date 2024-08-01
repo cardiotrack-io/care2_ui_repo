@@ -7,6 +7,8 @@ import MedicalTestsPicker from "./Components/MedicalTestsPicker/MedicalTestsPick
 import Loading from "./Components/Utility/Loading";
 import Registration from "./Components/CustomerRegistration/Registration";
 import ThankYouPage from "./Components/CustomerRegistration/ThankYou";
+import ReloadPrompt from "./Components/Utility/ReloadPrompt";
+import ConnectivityPrompt from "./Components/Utility/ConnectivityPrompt";
 
 // Globally declaring size of OTP
 const OTP_SIZE = 6;
@@ -29,12 +31,17 @@ function App() {
   // Medical Details
   const [allMedicalTests, setAllMedicalTests] = useState(null);
   const [allIndividualTests, setAllIndividualTests] = useState(null);
-  const [selectedMedicalTestIndividualList, setSelectedMedicalTestIndividualList] = useState(null);
+  const [
+    selectedMedicalTestIndividualList,
+    setSelectedMedicalTestIndividualList,
+  ] = useState(null);
   const [selectedIndividualList, setSelectedIndividualList] = useState(null);
-  const [selectedIndividualListCost, setSelectedIndividualListCost] = useState(null);
+  const [selectedIndividualListCost, setSelectedIndividualListCost] =
+    useState(null);
   const [selectedMedicalTests, setSelectedMedicalTests] = useState(null);
-  const [selectedMedicalTestsPackageCost, setSelectedMedicalTestsPackageCost] = useState(null);
-  const [selectedPackageName, setSelectedPackageName] = useState('');
+  const [selectedMedicalTestsPackageCost, setSelectedMedicalTestsPackageCost] =
+    useState(null);
+  const [selectedPackageName, setSelectedPackageName] = useState("");
 
   const [otp, setOtp] = useState(new Array(OTP_SIZE).fill(""));
   const [loading, setLoading] = useState(false);
@@ -43,11 +50,7 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case "landing":
-        return (
-          <LandingPage
-            setCurrentPage={setCurrentPage}
-          />
-        );
+        return <LandingPage setCurrentPage={setCurrentPage} />;
       case "login":
         return (
           <LoginPage
@@ -69,43 +72,56 @@ function App() {
             selectedMedicalTests={selectedMedicalTests}
             setSelectedMedicalTests={setSelectedMedicalTests}
             selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
-            setSelectedMedicalTestsPackageCost={setSelectedMedicalTestsPackageCost}
+            setSelectedMedicalTestsPackageCost={
+              setSelectedMedicalTestsPackageCost
+            }
             setSelectedIndividualList={setSelectedIndividualList}
             selectedIndividualListCost={selectedIndividualListCost}
             setSelectedIndividualListCost={setSelectedIndividualListCost}
-            selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
-            setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
+            selectedMedicalTestIndividualList={
+              selectedMedicalTestIndividualList
+            }
+            setSelectedMedicalTestIndividualList={
+              setSelectedMedicalTestIndividualList
+            }
             setLoading={setLoading}
             loading={loading}
             setCurrentPage={setCurrentPage}
-            selectedPackageName = {selectedPackageName}
-            setSelectedPackageName = {setSelectedPackageName}
+            selectedPackageName={selectedPackageName}
+            setSelectedPackageName={setSelectedPackageName}
           />
         );
       case "medicalTestsPicker":
         return (
           <MedicalTestsPicker
-          selectedMedicalTests={selectedMedicalTests}
-          setSelectedMedicalTests={setSelectedMedicalTests}
-          selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
-          setSelectedMedicalTestsPackageCost={setSelectedMedicalTestsPackageCost}
-          total={total}
-          setTotal={setTotal}
-          allIndividualTests={allIndividualTests}
-          setAllIndividualTests={setAllIndividualTests}
-          selectedIndividualList={selectedIndividualList}
-          setSelectedIndividualList={setSelectedIndividualList}
-          selectedIndividualListCost={selectedIndividualListCost}
-          setSelectedIndividualListCost={setSelectedIndividualListCost}
-          selectedMedicalTestIndividualList={selectedMedicalTestIndividualList}
-          setSelectedMedicalTestIndividualList={setSelectedMedicalTestIndividualList}
-          setCurrentPage={setCurrentPage}
+            selectedMedicalTests={selectedMedicalTests}
+            setSelectedMedicalTests={setSelectedMedicalTests}
+            selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
+            setSelectedMedicalTestsPackageCost={
+              setSelectedMedicalTestsPackageCost
+            }
+            total={total}
+            setTotal={setTotal}
+            allIndividualTests={allIndividualTests}
+            setAllIndividualTests={setAllIndividualTests}
+            selectedIndividualList={selectedIndividualList}
+            setSelectedIndividualList={setSelectedIndividualList}
+            selectedIndividualListCost={selectedIndividualListCost}
+            setSelectedIndividualListCost={setSelectedIndividualListCost}
+            selectedMedicalTestIndividualList={
+              selectedMedicalTestIndividualList
+            }
+            setSelectedMedicalTestIndividualList={
+              setSelectedMedicalTestIndividualList
+            }
+            setCurrentPage={setCurrentPage}
           />
         );
       case "registration":
         return (
           <Registration
             selectedIndividualList={selectedIndividualList}
+            selectedMedicalTestsPackageCost={selectedMedicalTestsPackageCost}
             total={total}
             setTotal={setTotal}
             customerName={customerName}
@@ -118,26 +134,25 @@ function App() {
             appointmentTime={appointmentTime}
             setAppointmentTime={setAppointmentTime}
             setCurrentPage={setCurrentPage}
-            selectedPackageName = {selectedPackageName}
+            selectedPackageName={selectedPackageName}
+            selectedMedicalTests={selectedMedicalTests}
             paymentStatus={paymentStatus}
             setPaymentStatus={setPaymentStatus}
           />
         );
-        case "thankYou":
+      case "thankYou":
         return (
-        <ThankYouPage
-        customerName={customerName}
-        customerAddress={customerAddress}
-        appointmentDate={appointmentDate}
-        appointmentTime={appointmentTime}
-        total={total}
-        selectedIndividualList={selectedIndividualList}
-        // selectedIndividualListCost={selectedIndividualListCost}
-        // setSelectedIndividualListCost={setSelectedIndividualListCost}
-        paymentStatus={paymentStatus}
-        setPaymentStatus={setPaymentStatus}
-      />
-      );
+          <ThankYouPage
+            // customerName={customerName}
+            // customerAddress={customerAddress}
+            // appointmentDate={appointmentDate}
+            // appointmentTime={appointmentTime}
+            // total={total}
+            selectedMedicalTests={selectedMedicalTests}
+            // selectedIndividualListCost={selectedIndividualListCost}
+            // setSelectedIndividualListCost={setSelectedIndividualListCost}
+          />
+        );
       default:
         return null;
     }
@@ -145,6 +160,8 @@ function App() {
 
   return (
     <div className="">
+      <ReloadPrompt />
+      <ConnectivityPrompt />
       {loading && (
         <div className="loading_container absolute bg-slate-900">
           <Loading />

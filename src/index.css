@@ -212,3 +212,15 @@
 .placeholder-darkBlue::placeholder {
         @apply text-darkBlue; /* Apply Tailwind class to placeholder */
       }
+
+.connectivity-prompt {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: red;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        z-index: 1000;
+      }
+      
